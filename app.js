@@ -35,7 +35,7 @@ testDBConn();
 // sys.stdout.flush()
 
 // pythonProcess.stdout.on("data", (data) => {
-//   // Do something with the data returned from python script
+//   console.log(data);
 // });
 
 // catch 404 and forward to error handler
