@@ -142,6 +142,13 @@ def main():
         sql9_2 = "SELECT ROLE, ROLE_ID, AUTHENTICATION_TYPE, COMMON, \
                         SYSTIMESTAMP \
                         FROM DBA_ROLES"
+        #Query10 
+        # (select info trabalhoPDB)
+        sql10 = "SELECT PROFILE_ID, PROFILE_NAME, RESOURCE_NAME, RESOURCE_TYPE, LIMIT, TIMESTAMP \
+                FROM PROFILES \
+                WHERE TIMESTAMP = SYSDATE"
+        # (select da orclpdb1)
+        sql10_2 = "SELECT PROFILE, RESOURCE_NAME, RESOURCE_TYPE, LIMIT, SYSTIMESTAMP FROM DBA_PROFILES"
         
         
         #EXECUTE QUERY
