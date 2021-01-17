@@ -1,4 +1,3 @@
-
 import cx_Oracle
 from time import time, sleep
 
@@ -19,6 +18,12 @@ def main():
 
         #cursor responsável por executar as queries
         cur_pdb1 = conn_pdb1.cursor()
+
+        #Faz a conexão *a BD para fazer os Inserts 
+        conn_pdb2 = cx_Oracle.connect(username2, password2, "//127.0.0.1/TrabalhoPDB.localdomain", encoding="UTF-8")
+
+        #cursor responsável por executar as queries
+        cur_pdb2 = conn_pdb2.cursor()
 
         #Query1 
         # (select info da trabalhoPDB)
@@ -150,14 +155,26 @@ def main():
 
         #Vai buscar o array de resultados da query (já tratados), fetchone() seria suficiente neste caso visto os resultados só terem uma row
         res = res.fetchall() 
+        #print(res)
 
         for row in res:
-                if list(row.keys())[0] == 'dbid':
-                        print(row)
-                        print("\n")
-                        insert_sql = "INSERT INTO DATABASE_INSTANCE values (:1, :2, :3, :4, :5, :6, :7, :8)"
-                        cur_pdb2.execute(insert_sql, row)
-                        cur_pdb2.commit()
+                if list(row.keys())[0] == 'DBID':
+                        try:
+                                #print(row)
+                                print("\n")
+                                insert_sql = "INSERT INTO DATABASE_INSTANCE (DB_ID, INSTANCE_NUMBER,STARTUP_TIME, VERSION, DB_NAME, INSTANCE_NAME, PLATFORM_NAME, DB_UNIQUE_NAME) values (:1, :2, :3, :4, :5, :6, :7, :8)"
+                                #print(row.values())
+                                cur_pdb2.execute(insert_sql, list(row.values()))
+                                conn_pdb2.commit()
+                        except cx_Oracle.IntegrityError: 
+                                insert_sql = "UPDATE DATABASE_INSTANCE SET DB_ID = :1, INSTANCE_NUMBER = :2 ,STARTUP_TIME = :3, VERSION = :4, DB_NAME = :5, INSTANCE_NAME = :6, PLATFORM_NAME = :7, DB_UNIQUE_NAME = :8"
+                                #print(row.values())
+                                cur_pdb2.execute(insert_sql, list(row.values()))
+                                conn_pdb2.commit()                               
+                        
+        s = cur_pdb2.execute(sql1)
+        s = s.fetchone()
+        print(s)
 
         res = cur_pdb1.execute(sql2_2)
         columns = [col[0] for col in res.description] 
@@ -168,7 +185,7 @@ def main():
                 if list(row.keys())[0] == 'username':
                         insert_sql = "INSERT INTO DBA_USERS values (:1, :2, :3, :4, :5, :6, :7, :8, :9, :10, :11)"
                         cur_pdb2.execute(insert_sql, row)
-                        cur_pdb2.commit()
+                        conn_pdb2.commit()
 
         #res = cur_pdb1.execute(sql4_2)
         #res = cur_pdb1.execute(sql5_2)
@@ -176,12 +193,6 @@ def main():
         #res = cur_pdb1.execute(sql7_2)
         #res = cur_pdb1.execute(sql8_2)
         #res = cur_pdb1.execute(sql9_2)
-
-        #Faz a conexão *a BD para fazer os Inserts 
-        conn_pdb2 = cx_Oracle.connect(username2, password2, "//127.0.0.1/TrabalhoPDB.localdomain", encoding="UTF-8")
-
-        #cursor responsável por executar as queries
-        cur_pdb2 = conn_pdb2.cursor()
 
         # Caso não seja possível verificar os headers podemos fazer o seguinte:
         # Criar um RES para selects de cada tabela e depois é só fazer inserts
