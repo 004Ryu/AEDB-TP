@@ -141,13 +141,6 @@ def main():
         
         #EXECUTE QUERY
         res = cur_pdb1.execute(sql1_2)
-        res = cur_pdb1.execute(sql2_2)
-        res = cur_pdb1.execute(sql4_2)
-        res = cur_pdb1.execute(sql5_2)
-        res = cur_pdb1.execute(sql6_2)
-        res = cur_pdb1.execute(sql7_2)
-        res = cur_pdb1.execute(sql8_2)
-        res = cur_pdb1.execute(sql9_2)
 
         #define os "headers" do resultado da query
         columns = [col[0] for col in res.description] 
@@ -158,7 +151,31 @@ def main():
         #Vai buscar o array de resultados da query (já tratados), fetchone() seria suficiente neste caso visto os resultados só terem uma row
         res = res.fetchall() 
 
-        #print(res.fetchone())
+        for row in res:
+                if list(row.keys())[0] == 'dbid':
+                        print(row)
+                        print("\n")
+                        insert_sql = "INSERT INTO DATABASE_INSTANCE values (:1, :2, :3, :4, :5, :6, :7, :8)"
+                        cur_pdb2.execute(insert_sql, row)
+                        cur_pdb2.commit()
+
+        res = cur_pdb1.execute(sql2_2)
+        columns = [col[0] for col in res.description] 
+        res.rowfactory = lambda *args: dict(zip(columns, args))
+        res = res.fetchall() 
+
+        for row in res:
+                if list(row.keys())[0] == 'username':
+                        insert_sql = "INSERT INTO DBA_USERS values (:1, :2, :3, :4, :5, :6, :7, :8, :9, :10, :11)"
+                        cur_pdb2.execute(insert_sql, row)
+                        cur_pdb2.commit()
+
+        #res = cur_pdb1.execute(sql4_2)
+        #res = cur_pdb1.execute(sql5_2)
+        #res = cur_pdb1.execute(sql6_2)
+        #res = cur_pdb1.execute(sql7_2)
+        #res = cur_pdb1.execute(sql8_2)
+        #res = cur_pdb1.execute(sql9_2)
 
         #Faz a conexão *a BD para fazer os Inserts 
         conn_pdb2 = cx_Oracle.connect(username2, password2, "//127.0.0.1/TrabalhoPDB.localdomain", encoding="UTF-8")
@@ -169,6 +186,7 @@ def main():
         # Caso não seja possível verificar os headers podemos fazer o seguinte:
         # Criar um RES para selects de cada tabela e depois é só fazer inserts
         # Esta solução é um bocado merda
+        '''
         for row in res:
                 #Verificar se a lógica é esta
                 if list(row.keys())[0] == 'dbid':
@@ -181,7 +199,7 @@ def main():
                         insert_sql = "INSERT INTO USERS_HAS_ROLES values (:1, :2, :3, :4, :5, :6, :7, :8, :9, :10)"
                         cur_pdb2.execute(insert_sql, row)
                 #continuar
-        
+        '''
 
         # Commit dos inserts
         conn_pdb2.commit()
@@ -194,6 +212,6 @@ def main():
         conn_pdb1.close()
 
 if __name__ == '__main__':
-        while True:
-                sleep(60 - time() % 60)
-                main()
+        #while True:
+        #        sleep(60 - time() % 60)
+        main()
