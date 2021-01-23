@@ -177,7 +177,9 @@ def main():
                                 insert_sql = "UPDATE DATABASE_INSTANCE SET DB_ID = :1, INSTANCE_NUMBER = :2 ,STARTUP_TIME = :3, VERSION = :4, DB_NAME = :5, INSTANCE_NAME = :6, PLATFORM_NAME = :7, DB_UNIQUE_NAME = :8"
                                 #print(row.values())
                                 cur_pdb2.execute(insert_sql, list(row.values()))
-                                conn_pdb2.commit()                               
+                                conn_pdb2.commit()
+                else:
+                        break                            
                         
         #s = cur_pdb2.execute(sql1)
         #s = s.fetchone()
@@ -201,7 +203,9 @@ def main():
                         except cx_Oracle.IntegrityError: 
                                 insert_sql = "UPDATE USERS SET USER_ID = :1, USERNAME = :2, ACCOUNT_STATUS = :3, EXPIRY_DATE = :4, DEFAULT_TABLESPACE = :5, TEMPORARY_TABLESPACE = :6, CREATED = :7, COMMON = :8, LAST_LOGIN = :9, TIMESTAMP = :10, PROFILE_ID = :11"
                                 cur_pdb2.execute(insert_sql, list(row.values()))
-                                conn_pdb2.commit()  
+                                conn_pdb2.commit()
+                else:
+                        break
          
 
         
@@ -211,6 +215,7 @@ def main():
         columns = [col[0] for col in res.description] 
         res.rowfactory = lambda *args: dict(zip(columns, args))
         res = res.fetchall()
+        #sql_special = "SELECT USER_ID, ROLE_ID FROM USERS"
         ########## !!!!!!!!!!!!!!!!!!!!!!! #############################
         
 
@@ -233,6 +238,8 @@ def main():
                                 insert_sql = "UPDATE DATAFILES SET DATAFILE_ID = :1, DATAFILE_NAME = :2, DIRECTORY = :3, TOTAL_SPACE = :4, AUTOEXTENSIBLE = :5, FREE_SPACE = :6, STATUS = :7, TIMESTAMP = :8, TABLESPACE_ID = :9, DB_ID = :10"
                                 cur_pdb2.execute(insert_sql, list(row.values()))
                                 conn_pdb2.commit()
+                else:
+                        break
          
 
 
@@ -255,6 +262,8 @@ def main():
                                 insert_sql = "UPDATE TABLESPACES SET TABLESPACE_ID = :1, TABLESPACE_NAME = :2, STATUS = :3, TYPE = :4, SEGMENT_SPACE_MANAGEMENT = :5, TIMESTAMP = :6, DB_ID = :7"
                                 cur_pdb2.execute(insert_sql, list(row.values()))
                                 conn_pdb2.commit()
+                else:
+                        break
         
 
 
@@ -279,6 +288,8 @@ def main():
                                 insert_sql = "UPDATE CPU SET CPU_ID = :1, DB_ID = :2, SQL_ID = :3, EXECUTIONS_DELTA = :4, BUFFER_GETS_DELTA = :5, DISK_READS_DELTA = :6, IOWAIT_DELTA = :7, APWAIT_DELTA = :8, CPU_TIME_DELTA = :9, ELAPSED_TIME_DELTA = :10, TIMESTAMP = :11"
                                 cur_pdb2.execute(insert_sql, list(row.values()))
                                 conn_pdb2.commit()
+                else:
+                        break
         
 
         res = cur_pdb1.execute(sql7_2)
@@ -300,6 +311,8 @@ def main():
                                 insert_sql = "UPDATE MEMORY SET MEMORY_ID = :1, FIXED_SIZE = :2, VARIABLE_SIZE = :3, DATABASE_BUFFERS = :4, REDO_BUFFERS = :5, TIMESTAMP = :6, DB_ID = :7"
                                 cur_pdb2.execute(insert_sql, list(row.values()))
                                 conn_pdb2.commit()
+                else:
+                        break
         
         res = cur_pdb1.execute(sql8_2)
         columns = [col[0] for col in res.description] 
@@ -319,6 +332,8 @@ def main():
                                 insert_sql = "UPDATE SESSIONS SET SESSION_ID = :1, SAMPLE_TIME = :2, SQL_ID = :3, SQL_OP_NAME = :4, SQL_PLAN_OPERATION = :5, WAIT_CLASS = :6, WAIT_TIME = :7, SESSION_TYPE = :8, SESSION_STATE = :9, TIME_WAITED = :10, TIMESTAMP = :11, USER_ID = :12"
                                 cur_pdb2.execute(insert_sql, list(row.values()))
                                 conn_pdb2.commit()
+                else:
+                        break
 
         res = cur_pdb1.execute(sql9_2)
         columns = [col[0] for col in res.description] 
@@ -339,7 +354,8 @@ def main():
                                 insert_sql = "UPDATE ROLES SET ROLE_ID = :1, ROLE_NAME = :2, AUTHENTICATION_TYPE = :3, COMMON = :4, TIMESTAMP = :5"
                                 cur_pdb2.execute(insert_sql, list(row.values()))
                                 conn_pdb2.commit()
-        
+                else:
+                        break
 
         res = cur_pdb1.execute(sql10_2)
         columns = [col[0] for col in res.description] 
@@ -360,6 +376,8 @@ def main():
                                 insert_sql = "UPDATE PROFILES SET PROFILE_ID = :1, PROFILE_NAME = :2, RESOURCE_NAME = :3, RESOURCE_TYPE = :4, LIMIT = :5, TIMESTAMP = :6"
                                 cur_pdb2.execute(insert_sql, list(row.values()))
                                 conn_pdb2.commit()
+                else:
+                        break
 
         conn_pdb2.commit()
 
