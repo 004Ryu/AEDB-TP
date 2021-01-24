@@ -351,6 +351,7 @@ def main():
                                 row['timestamp'] = datetime.datetime.now()
                                 row['roleId'] = randint(0,1000)
                                 insert_sql = "INSERT INTO ROLES (ROLE_ID, ROLE_NAME, AUTHENTICATION_TYPE, COMMON, TIMESTAMP) values (:5, :1, :2, :3, :4)"
+                                cur_pdb2.setinputsizes(None, None, None, cx_Oracle.TIMESTAMP)
                                 cur_pdb2.execute(insert_sql, list(row.values()))
                                 conn_pdb2.commit()
                         except cx_Oracle.IntegrityError: 
