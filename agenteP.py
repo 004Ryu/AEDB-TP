@@ -1,6 +1,10 @@
 import cx_Oracle
 from time import time, sleep
-import uuid
+import random
+import string
+
+#def ran_gen(size, chars=string.ascii_uppercase + string.digits): 
+#    return ''.join(random.choice(chars) for x in range(size))
 
 def main():
         username = "system"
@@ -343,7 +347,7 @@ def main():
                                 print("row no for do role: ")
                                 print(row)
                                 print("\n")
-                                row['roleId'] = uuid.uuid1()
+                                row['roleId'] = randint(0,1000)
                                 insert_sql = "INSERT INTO ROLES (ROLE_ID, ROLE_NAME, AUTHENTICATION_TYPE, COMMON, TIMESTAMP) values (:5, :1, :2, :3, :4)"
                                 cur_pdb2.execute(insert_sql, list(row.values()))
                                 conn_pdb2.commit()
