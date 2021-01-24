@@ -1,6 +1,6 @@
 import cx_Oracle
 from time import time, sleep
-import random
+from random import randint
 import string
 
 #def ran_gen(size, chars=string.ascii_uppercase + string.digits): 
