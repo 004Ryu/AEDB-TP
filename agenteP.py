@@ -139,7 +139,7 @@ def main():
                 WHERE TIMESTAMP = SYSDATE"
 
         # (select info da orclpdb1 )
-        sql9_2 = "SELECT ROLE, ROLE_ID, AUTHENTICATION_TYPE, COMMON, \
+        sql9_2 = "SELECT ROLE, AUTHENTICATION_TYPE, COMMON, \
                         SYSTIMESTAMP \
                         FROM DBA_ROLES"
         #Query10 
