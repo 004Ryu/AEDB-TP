@@ -1,10 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# import cx_Oracle
-import sys
+import cx_Oracle
 from time import time, sleep
-print("Ola")
-sys.stdout.flush()
+
 cx_Oracle.init_oracle_client(lib_dir="C:/Oracle/instantclient_19_9")
 
 # Falta:
@@ -188,7 +186,7 @@ def main():
         s = cur_pdb2.execute(sql1)
         s = s.fetchone()
         print(s)
-        sys.stdout.flush()
+        
         res = cur_pdb1.execute(sql2_2)
         columns = [col[0] for col in res.description] 
         res.rowfactory = lambda *args: dict(zip(columns, args))
