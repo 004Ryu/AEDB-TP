@@ -343,8 +343,9 @@ def main():
                                 print("row no for do role: ")
                                 print(row)
                                 print("\n")
-                                insert_sql = "INSERT INTO ROLES (ROLE_ID, ROLE_NAME, AUTHENTICATION_TYPE, COMMON, TIMESTAMP) values (:2, :1, :3, :4, :5)"
-                                cur_pdb2.execute(insert_sql, list(row.values()))
+                                roleId = uuid.uuid1()
+                                insert_sql = "INSERT INTO ROLES (ROLE_ID, ROLE_NAME, AUTHENTICATION_TYPE, COMMON, TIMESTAMP) values (:1, :2, :3, :4, :5)"
+                                cur_pdb2.execute(insert_sql, roleId, list(row.values()))
                                 conn_pdb2.commit()
                         except cx_Oracle.IntegrityError: 
                                 insert_sql = "UPDATE ROLES SET ROLE_ID = :1, ROLE_NAME = :2, AUTHENTICATION_TYPE = :3, COMMON = :4, TIMESTAMP = :5"
