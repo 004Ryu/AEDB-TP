@@ -2,7 +2,7 @@ import cx_Oracle
 from time import time, sleep
 from random import randint
 import string
-import time
+import datetime
 
 
 #def ran_gen(size, chars=string.ascii_uppercase + string.digits): 
@@ -348,7 +348,7 @@ def main():
                                 print("row no for do role: ")
                                 print(row)
                                 print("\n")
-                                row['timestamp'] = time.time()
+                                row['timestamp'] = datetime.datetime.now()
                                 row['roleId'] = randint(0,1000)
                                 insert_sql = "INSERT INTO ROLES (ROLE_ID, ROLE_NAME, AUTHENTICATION_TYPE, COMMON, TIMESTAMP) values (:5, :1, :2, :3, :4)"
                                 cur_pdb2.execute(insert_sql, list(row.values()))
