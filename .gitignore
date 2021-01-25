@@ -44,3 +44,6 @@ dist
 
 # Gatsby files
 .cache/
+
+# VScode settings
+.vscode/
