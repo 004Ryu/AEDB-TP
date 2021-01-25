@@ -1,14 +1,12 @@
-# -*- coding: utf-8 -*-
-
 import cx_Oracle
 from time import time, sleep
+from random import randint
+import string
+import datetime
 
-cx_Oracle.init_oracle_client(lib_dir="C:/Oracle/instantclient_19_9")
 
-# Falta:
-#       Testar se os inserts funcionam, se sim falta completar o resto deles mas é simples
-#       Fazer logging das operações
-#       Se possível tentar optimizar o processo de insert
+#def ran_gen(size, chars=string.ascii_uppercase + string.digits): 
+#    return ''.join(random.choice(chars) for x in range(size))
 
 def main():
         username = "system"
@@ -25,7 +23,7 @@ def main():
 
         #Faz a conexão *a BD para fazer os Inserts 
         conn_pdb2 = cx_Oracle.connect(username2, password2, "//127.0.0.1/TrabalhoPDB.localdomain", encoding="UTF-8")
-        
+
         #cursor responsável por executar as queries
         cur_pdb2 = conn_pdb2.cursor()
 
@@ -99,7 +97,7 @@ def main():
                 WHERE TIMESTAMP = SYSDATE"
 
         # (select info da orclpdb1 )
-        sql6_2 = " SELECT DBID, SQL_ID, EXECUTIONS_DELTA, DISK_READS_DELTA, BUFFER_GETS_DELTA, CPU_TIME_DELTA, ELAPSED_TIME_DELTA, \
+        sql6_2 = " SELECT DBID as DBID2, SQL_ID, EXECUTIONS_DELTA, DISK_READS_DELTA, BUFFER_GETS_DELTA, CPU_TIME_DELTA, ELAPSED_TIME_DELTA, \
                 IOWAIT_DELTA, APWAIT_DELTA, SYSTIMESTAMP \
                 FROM DBA_HIST_SQLSTAT"
 
@@ -143,8 +141,7 @@ def main():
                 WHERE TIMESTAMP = SYSDATE"
 
         # (select info da orclpdb1 )
-        sql9_2 = "SELECT ROLE, ROLE_ID, AUTHENTICATION_TYPE, COMMON, \
-                        SYSTIMESTAMP \
+        sql9_2 = "SELECT ROLE, AUTHENTICATION_TYPE, COMMON, \
                         FROM DBA_ROLES"
         #Query10 
         # (select info trabalhoPDB)
@@ -171,7 +168,7 @@ def main():
         for row in res:
                 if list(row.keys())[0] == 'DBID':
                         try:
-                                print(row)
+                                #print(row)
                                 print("\n")
                                 insert_sql = "INSERT INTO DATABASE_INSTANCE (DB_ID, INSTANCE_NUMBER,STARTUP_TIME, VERSION, DB_NAME, INSTANCE_NAME, PLATFORM_NAME, DB_UNIQUE_NAME) values (:1, :2, :3, :4, :5, :6, :7, :8)"
                                 #print(row.values())
@@ -181,51 +178,212 @@ def main():
                                 insert_sql = "UPDATE DATABASE_INSTANCE SET DB_ID = :1, INSTANCE_NUMBER = :2 ,STARTUP_TIME = :3, VERSION = :4, DB_NAME = :5, INSTANCE_NAME = :6, PLATFORM_NAME = :7, DB_UNIQUE_NAME = :8"
                                 #print(row.values())
                                 cur_pdb2.execute(insert_sql, list(row.values()))
-                                conn_pdb2.commit()                               
+                                conn_pdb2.commit()
+                else:
+                        break                            
                         
-        s = cur_pdb2.execute(sql1)
-        s = s.fetchone()
-        print(s)
-        
+        #s = cur_pdb2.execute(sql1)
+        #s = s.fetchone()
+        #print(s)
+
         res = cur_pdb1.execute(sql2_2)
         columns = [col[0] for col in res.description] 
         res.rowfactory = lambda *args: dict(zip(columns, args))
         res = res.fetchall() 
 
+         for row in res:
+                if list(row.keys())[0] == 'USERNAME':
+                        try:
+                                print("row no for do USERNAME: ")
+                                print(row)
+                                print("\n")
+                                insert_sql = "INSERT INTO USERS (USER_ID, USERNAME, ACCOUNT_STATUS, EXPIRY_DATE, DEFAULT_TABLESPACE, TEMPORARY_TABLESPACE, \
+                                        CREATED, COMMON, LAST_LOGIN, TIMESTAMP, PROFILE_ID) values (:2, :1, :3, :4, :5, 'null' , :6, :8, :9, :10, '-1')"
+                                cur_pdb2.execute(insert_sql, list(row.values()))
+                                conn_pdb2.commit()
+                        except cx_Oracle.IntegrityError: 
+                                insert_sql = "UPDATE USERS SET USER_ID = :1, USERNAME = :2, ACCOUNT_STATUS = :3, EXPIRY_DATE = :4, DEFAULT_TABLESPACE = :5, TEMPORARY_TABLESPACE = :6, CREATED = :7, COMMON = :8, LAST_LOGIN = :9, TIMESTAMP = :10, PROFILE_ID = :11"
+                                cur_pdb2.execute(insert_sql, list(row.values()))
+                                conn_pdb2.commit()
+                else:
+                        break
+         
+
+        
+        ########## !!!!!!!!!!!!!!!!!!!!!!! #############################
+        #ver melhor esta porque é necessário aceder à nossa BD creio eu
+        res = cur_pdb1.execute(sql3)
+        columns = [col[0] for col in res.description] 
+        res.rowfactory = lambda *args: dict(zip(columns, args))
+        res = res.fetchall()
+        #sql_special = "SELECT USER_ID, ROLE_ID FROM USERS"
+        ########## !!!!!!!!!!!!!!!!!!!!!!! #############################
+        
+
+        
+        res = cur_pdb1.execute(sql4_2)
+        columns = [col[0] for col in res.description] 
+        res.rowfactory = lambda *args: dict(zip(columns, args))
+        res = res.fetchall() 
+
         for row in res:
-                if list(row.keys())[0] == 'username':
-                        insert_sql = "INSERT INTO DBA_USERS values (:1, :2, :3, :4, :5, :6, :7, :8, :9, :10, :11)"
-                        cur_pdb2.execute(insert_sql, row)
-                        conn_pdb2.commit()
+                if list(row.keys())[0] == 'FILE_NAME':
+                        try:
+                                print("row no for do FILE_NAME: ")
+                                print(row)
+                                print("\n")
+                                insert_sql = "INSERT INTO DATAFILES (DATAFILE_ID, DATAFILE_NAME, DIRECTORY, TOTAL_SPACE, AUTOEXTENSIBLE, FREE_SPACE, STATUS, TIMESTAMP, TABLESPACE_ID, DB_ID) values (:2, :1, 'NULL', :4, :5, :6, :7, :8, '-1', '-1')"
+                                cur_pdb2.execute(insert_sql, list(row.values()))
+                                conn_pdb2.commit()
+                        except cx_Oracle.IntegrityError: 
+                                insert_sql = "UPDATE DATAFILES SET DATAFILE_ID = :1, DATAFILE_NAME = :2, DIRECTORY = :3, TOTAL_SPACE = :4, AUTOEXTENSIBLE = :5, FREE_SPACE = :6, STATUS = :7, TIMESTAMP = :8, TABLESPACE_ID = :9, DB_ID = :10"
+                                cur_pdb2.execute(insert_sql, list(row.values()))
+                                conn_pdb2.commit()
+                else:
+                        break
+         
 
-        #res = cur_pdb1.execute(sql4_2)
-        #res = cur_pdb1.execute(sql5_2)
-        #res = cur_pdb1.execute(sql6_2)
-        #res = cur_pdb1.execute(sql7_2)
-        #res = cur_pdb1.execute(sql8_2)
-        #res = cur_pdb1.execute(sql9_2)
 
-        # Caso não seja possível verificar os headers podemos fazer o seguinte:
-        # Criar um RES para selects de cada tabela e depois é só fazer inserts
-        # Esta solução é um bocado merda
-        '''
+        res = cur_pdb1.execute(sql5_2)
+        columns = [col[0] for col in res.description] 
+        res.rowfactory = lambda *args: dict(zip(columns, args))
+        res = res.fetchall() 
+
+        
         for row in res:
-                #Verificar se a lógica é esta
-                if list(row.keys())[0] == 'dbid':
-                        insert_sql = "INSERT INTO DATABASE_INSTANCE values (:1, :2, :3, :4, :5, :6, :7, :8)"
-                        cur_pdb2.execute(insert_sql, row)
-                elif list(row.keys())[0] == 'username':
-                        insert_sql = "INSERT INTO DBA_USERS values (:1, :2, :3, :4, :5, :6, :7, :8, :9, :10, :11)"
-                        cur_pdb2.execute(insert_sql, row)
-                elif list(row.keys())[0] == 'user_id':
-                        insert_sql = "INSERT INTO USERS_HAS_ROLES values (:1, :2, :3, :4, :5, :6, :7, :8, :9, :10)"
-                        cur_pdb2.execute(insert_sql, row)
-                #continuar
-        '''
+                if list(row.keys())[0] == 'TABLESPACE_NAME':
+                        try:
+                                print("row no for do TABLESPACE_NAME: ")
+                                print(row)
+                                print("\n")
+                                insert_sql = "INSERT INTO TABLESPACES (TABLESPACE_ID, TABLESPACE_NAME, STATUS, TYPE, SEGMENT_SPACE_MANAGEMENT, TIMESTAMP, DB_ID) values ('-1', :1, :2, 'null', :4, :5, '-1')"
+                                cur_pdb2.execute(insert_sql, list(row.values()))
+                                conn_pdb2.commit()
+                        except cx_Oracle.IntegrityError: 
+                                insert_sql = "UPDATE TABLESPACES SET TABLESPACE_ID = :1, TABLESPACE_NAME = :2, STATUS = :3, TYPE = :4, SEGMENT_SPACE_MANAGEMENT = :5, TIMESTAMP = :6, DB_ID = :7"
+                                cur_pdb2.execute(insert_sql, list(row.values()))
+                                conn_pdb2.commit()
+                else:
+                        break
+        
 
-        # Commit dos inserts
+
+        res = cur_pdb1.execute(sql6_2)
+        columns = [col[0] for col in res.description] 
+        res.rowfactory = lambda *args: dict(zip(columns, args))
+        res = res.fetchall() 
+
+        
+        for row in res:
+                if list(row.keys())[0] == 'DBID2':
+                        try:
+                                print("row no for do DBID2: ")
+                                print(row)
+                                print("\n")
+                                insert_sql = "INSERT INTO CPU (CPU_ID, DB_ID, SQL_ID, EXECUTIONS_DELTA. BUFFER_GETS_DELTA, \
+                                        DISK_READS_DELTA, IOWAIT_DELTA, APWAIT_DELTA, CPU_TIME_DELTA, ELAPSED_TIME_DELTA, TIMESTAMP) values \
+                                                 ('-1', :1, :2, :3, :5, :4, :8, :9, :6, :7, :10)"
+                                cur_pdb2.execute(insert_sql, list(row.values()))
+                                conn_pdb2.commit()
+                        except cx_Oracle.IntegrityError: 
+                                insert_sql = "UPDATE CPU SET CPU_ID = :1, DB_ID = :2, SQL_ID = :3, EXECUTIONS_DELTA = :4, BUFFER_GETS_DELTA = :5, DISK_READS_DELTA = :6, IOWAIT_DELTA = :7, APWAIT_DELTA = :8, CPU_TIME_DELTA = :9, ELAPSED_TIME_DELTA = :10, TIMESTAMP = :11"
+                                cur_pdb2.execute(insert_sql, list(row.values()))
+                                conn_pdb2.commit()
+                else:
+                        break
+        
+
+        res = cur_pdb1.execute(sql7_2)
+        columns = [col[0] for col in res.description] 
+        res.rowfactory = lambda *args: dict(zip(columns, args))
+        res = res.fetchall() 
+
+
+        for row in res:
+                if list(row.keys())[0] == 'memory_id': #VERIFICAR QUAL É ESTA KEY
+                        try:
+                                print("row no for do memory_id: ")
+                                print(row)
+                                print("\n")
+                                insert_sql = "INSERT INTO MEMORY (MEMORY_ID, FIXED_SIZE, VARIABLE_SIZE, DATABASE_BUFFERS, REDO_BUFFERS, TIMESTAMP, DB_ID) values (:1, :2, :3, :4, :5, :6, :7)"
+                                cur_pdb2.execute(insert_sql, list(row.values()))
+                                conn_pdb2.commit()
+                        except cx_Oracle.IntegrityError: 
+                                insert_sql = "UPDATE MEMORY SET MEMORY_ID = :1, FIXED_SIZE = :2, VARIABLE_SIZE = :3, DATABASE_BUFFERS = :4, REDO_BUFFERS = :5, TIMESTAMP = :6, DB_ID = :7"
+                                cur_pdb2.execute(insert_sql, list(row.values()))
+                                conn_pdb2.commit()
+                else:
+                        break
+        
+        res = cur_pdb1.execute(sql8_2)
+        columns = [col[0] for col in res.description] 
+        res.rowfactory = lambda *args: dict(zip(columns, args))
+        res = res.fetchall() 
+
+        for row in res:
+                if list(row.keys())[0] == 'pid':
+                        try:
+                                print("row no for do pid: ")
+                                print(row)
+                                print("\n")
+                                insert_sql = "INSERT INTO SESSIONS (SESSION_ID, SAMPLE_TIME, SQL_ID, SQL_OP_NAME, SQL_PLAN_OPERATION, WAIT_CLASS, WAIT_TIME, SESSION_TYPE, SESSION_STATE, TIME_WAITED, TIMESTAMP, USER_ID) values (:1, :2, :3, :4, :5, :6, :7, :8, :9, :10, :11, :12)"
+                                cur_pdb2.execute(insert_sql, list(row.values()))
+                                conn_pdb2.commit()
+                        except cx_Oracle.IntegrityError: 
+                                insert_sql = "UPDATE SESSIONS SET SESSION_ID = :1, SAMPLE_TIME = :2, SQL_ID = :3, SQL_OP_NAME = :4, SQL_PLAN_OPERATION = :5, WAIT_CLASS = :6, WAIT_TIME = :7, SESSION_TYPE = :8, SESSION_STATE = :9, TIME_WAITED = :10, TIMESTAMP = :11, USER_ID = :12"
+                                cur_pdb2.execute(insert_sql, list(row.values()))
+                                conn_pdb2.commit()
+                else:
+                        break
+
+        res = cur_pdb1.execute(sql9_2)
+        columns = [col[0] for col in res.description] 
+        res.rowfactory = lambda *args: dict(zip(columns, args))
+        res = res.fetchall() 
+
+         
+        for row in res:
+                if list(row.keys())[0] == 'ROLE':
+                        try:
+                                print("row no for do role: ")
+                                print(row)
+                                print("\n")
+                                row['timestamp'] = datetime.datetime.now()
+                                row['roleId'] = randint(0,1000)
+                                insert_sql = "INSERT INTO ROLES (ROLE_ID, ROLE_NAME, AUTHENTICATION_TYPE, COMMON, TIMESTAMP) values (:5, :1, :2, :3, :4)"
+                                cur_pdb2.setinputsizes(None, None, None, cx_Oracle.TIMESTAMP)
+                                cur_pdb2.execute(insert_sql, list(row.values()))
+                                conn_pdb2.commit()
+                        except cx_Oracle.IntegrityError: 
+                                insert_sql = "UPDATE ROLES SET ROLE_ID = :5, ROLE_NAME = :1, AUTHENTICATION_TYPE = :2, COMMON = :3, TIMESTAMP = :4"
+                                cur_pdb2.execute(insert_sql, list(row.values()))
+                                conn_pdb2.commit()
+                else:
+                        break
+
+        res = cur_pdb1.execute(sql10_2)
+        columns = [col[0] for col in res.description] 
+        res.rowfactory = lambda *args: dict(zip(columns, args))
+        res = res.fetchall() 
+
+        for row in res:
+                if list(row.keys())[0] == 'PROFILE':
+                        try:
+                                print("row no for do profile: ")
+                                print(row)
+                                print("\n")
+                                insert_sql = "INSERT INTO PROFILES (PROFILE_ID, PROFILE_NAME, RESOURCE_NAME, RESOURCE_TYPE, LIMIT, TIMESTAMP) \
+                                         values ('-1', :1, :2, :3, :4, :5)"
+                                cur_pdb2.execute(insert_sql, list(row.values()))
+                                conn_pdb2.commit()
+                        except cx_Oracle.IntegrityError: 
+                                insert_sql = "UPDATE PROFILES SET PROFILE_ID = :1, PROFILE_NAME = :2, RESOURCE_NAME = :3, RESOURCE_TYPE = :4, LIMIT = :5, TIMESTAMP = :6"
+                                cur_pdb2.execute(insert_sql, list(row.values()))
+                                conn_pdb2.commit()
+                else:
+                        break
+
         conn_pdb2.commit()
-
 
         cur_pdb2.close()
         conn_pdb2.close()
