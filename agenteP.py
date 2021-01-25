@@ -2,6 +2,8 @@ import cx_Oracle
 from time import time, sleep
 from random import randint
 import string
+import datetime
+
 
 #def ran_gen(size, chars=string.ascii_uppercase + string.digits): 
 #    return ''.join(random.choice(chars) for x in range(size))
@@ -139,8 +141,7 @@ def main():
                 WHERE TIMESTAMP = SYSDATE"
 
         # (select info da orclpdb1 )
-        sql9_2 = "SELECT ROLE, ROLE_ID, AUTHENTICATION_TYPE, COMMON, \
-                        SYSTIMESTAMP \
+        sql9_2 = "SELECT ROLE, AUTHENTICATION_TYPE, COMMON, \
                         FROM DBA_ROLES"
         #Query10 
         # (select info trabalhoPDB)
@@ -347,12 +348,14 @@ def main():
                                 print("row no for do role: ")
                                 print(row)
                                 print("\n")
+                                row['timestamp'] = datetime.datetime.now()
                                 row['roleId'] = randint(0,1000)
                                 insert_sql = "INSERT INTO ROLES (ROLE_ID, ROLE_NAME, AUTHENTICATION_TYPE, COMMON, TIMESTAMP) values (:5, :1, :2, :3, :4)"
+                                cur_pdb2.setinputsizes(None, None, None, cx_Oracle.TIMESTAMP)
                                 cur_pdb2.execute(insert_sql, list(row.values()))
                                 conn_pdb2.commit()
                         except cx_Oracle.IntegrityError: 
-                                insert_sql = "UPDATE ROLES SET ROLE_ID = :1, ROLE_NAME = :2, AUTHENTICATION_TYPE = :3, COMMON = :4, TIMESTAMP = :5"
+                                insert_sql = "UPDATE ROLES SET ROLE_ID = :5, ROLE_NAME = :1, AUTHENTICATION_TYPE = :2, COMMON = :3, TIMESTAMP = :4"
                                 cur_pdb2.execute(insert_sql, list(row.values()))
                                 conn_pdb2.commit()
                 else:
