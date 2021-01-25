@@ -348,11 +348,13 @@ def main():
                                 print("row no for do role: ")
                                 print(row)
                                 print("\n")
-                                row['timestamp'] = datetime.datetime.now()
+                                row['ts'] = datetime.datetime.now()
                                 row['roleId'] = randint(0,1000)
-                                insert_sql = "INSERT INTO ROLES (ROLE_ID, ROLE_NAME, AUTHENTICATION_TYPE, COMMON, TIMESTAMP) values (:5, :1, :2, :3, :4)" #caso dê erro no timestamp usar {'t':ts} em vez do :4
-                                cur_pdb2.setinputsizes(None, None, None, cx_Oracle.TIMESTAMP)
-                                cur_pdb2.execute(insert_sql, list(row.values()))
+                                insert_sql = "INSERT INTO ROLES (ROLE_ID, ROLE_NAME, AUTHENTICATION_TYPE, COMMON, TIMESTAMP) values (:5, :1, :2, :3, :t_val)" 
+                                cur_pdb2.prepare(insert_sql)
+                                cur_pdb2.setinputsizes(t_val = cx_Oracle.TIMESTAMP)
+                                cur_pdb2.execute(None)
+                                #cur_pdb2.execute(insert_sql, list(row.values()))
                                 conn_pdb2.commit()
                         except cx_Oracle.IntegrityError: 
                                 insert_sql = "UPDATE ROLES SET ROLE_ID = :5, ROLE_NAME = :1, AUTHENTICATION_TYPE = :2, COMMON = :3, TIMESTAMP = :4"
