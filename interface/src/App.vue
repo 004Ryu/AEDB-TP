@@ -1,15 +1,15 @@
 <template>
   <v-app>
     <div class="nav">
-      <router-link to="/">Instance</router-link>
-      <router-link to="/cpu">CPU</router-link>
-      <router-link to="/datafiles">DataFiles</router-link>
-      <router-link to="/memory">Memory</router-link>
-      <router-link to="/profiles">Profiles</router-link>
-      <router-link to="/roles">Roles</router-link>
-      <router-link to="/sessions">Sessions</router-link>
-      <router-link to="/tablespaces">TableSpaces</router-link>
-      <router-link to="/users">Users</router-link>
+      <router-link to="/" class="link">Instance</router-link>
+      <router-link to="/cpu" class="link">CPU</router-link>
+      <router-link to="/datafiles" class="link">DataFiles</router-link>
+      <router-link to="/memory" class="link">Memory</router-link>
+      <router-link to="/profiles" class="link">Profiles</router-link>
+      <router-link to="/roles" class="link">Roles</router-link>
+      <router-link to="/sessions" class="link">Sessions</router-link>
+      <router-link to="/tablespaces" class="link">TableSpaces</router-link>
+      <router-link to="/users" class="link">Users</router-link>
     </div>
     <v-main>
       <router-view />
@@ -23,8 +23,21 @@ export default {
 
   components: {},
 
-  data: () => ({
-    //
-  }),
+  methods: {},
+
+  data: () => ({}),
 };
 </script>
+
+<style scoped>
+.nav {
+  display: grid;
+  grid-template-columns: 11% 11% 11% 11% 11% 11% 11% 11% 11%;
+  justify-items: center;
+}
+
+.link {
+  text-decoration: none;
+  margin: 10px 0px;
+}
+</style>

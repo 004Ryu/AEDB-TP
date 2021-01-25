@@ -7,10 +7,32 @@ const db = require("./config/db").connection;
 
 var app = express();
 
+//CORS
+const cors = require("cors");
+const corsOpts = {
+  origin: "*",
+  credentials: true,
+  methods: ["GET", "PUT", "POST", "DELETE", "OPTIONS"],
+  allowedHeaders: [
+    "Accept",
+    "Authorization",
+    "Cache-Control",
+    "Content-Type",
+    "DNT",
+    "If-Modified-Since",
+    "Keep-Alive",
+    "Origin",
+    "User-Agent",
+    "X-Requested-With",
+    "Content-Length",
+  ],
+};
+
 app.use(logger("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, "public")));
+app.use(cors(corsOpts));
 
 app.use("/", router);
 

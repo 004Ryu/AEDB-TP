@@ -17,7 +17,7 @@ router.route("/datafiles").get(Controller.getDatafiles);
 
 /** @method get : Otenção da informação da tabela Database_Instance.
  */
-router.route("/instances").get(Controller.getInstance);
+router.route("/").get(Controller.getInstance);
 
 /** @method get : Otenção da informação da tabela Memory.
  */
