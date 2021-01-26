@@ -6,8 +6,8 @@ module.exports.list = async () => {
   try {
     conn = await db;
     const query = `SELECT ROLE_ID, ROLE_NAME, AUTHENTICATION_TYPE, COMMON, TIMESTAMP \
-    FROM ROLES \
-    WHERE TIMESTAMP = SYSDATE`;
+    FROM TRABALHOPDB.ROLES \
+    ORDER BY TIMESTAMP DESC`;
     return conn.execute(query).then((data) => {
       data.rows.forEach((row) => {
         const aux = {};

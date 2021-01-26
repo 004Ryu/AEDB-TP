@@ -34,10 +34,10 @@
             TIME_WAITED
           </th>
           <th class="text-left">
-            TIMESTAMP
+            USER_ID
           </th>
           <th class="text-left">
-            USER_ID
+            TIMESTAMP
           </th>
         </tr>
       </thead>
@@ -53,8 +53,8 @@
           <td>{{ item.SESSION_TYPE }}</td>
           <td>{{ item.SESSION_STATE }}</td>
           <td>{{ item.TIME_WAITED }}</td>
-          <td>{{ item.TIMESTAMP }}</td>
           <td>{{ item.USER_ID }}</td>
+          <td>{{ item.TIMESTAMP }}</td>
         </tr>
       </tbody>
     </template>
@@ -68,10 +68,18 @@ export default {
   methods: {
     getSessions() {
       axios
-        .get("localhost:4444/sessions")
-        .then((res) => (this.sessions = res.data))
+        .get("http://localhost:4444/sessions", {
+          "Content-Type": "application/json",
+        })
+        .then((res) => {
+          console.log(res.data);
+          this.sessions = res.data;
+        })
         .catch((erro) => console.log(erro));
     },
+  },
+  created() {
+    this.getSessions();
   },
   data() {
     return {

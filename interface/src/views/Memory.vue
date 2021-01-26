@@ -21,9 +21,6 @@
           <th class="text-left">
             TIMESTAMP
           </th>
-          <th class="text-left">
-            DB_ID
-          </th>
         </tr>
       </thead>
       <tbody>
@@ -34,7 +31,6 @@
           <td>{{ item.DATABASE_BUFFERS }}</td>
           <td>{{ item.REDO_BUFFERS }}</td>
           <td>{{ item.TIMESTAMP }}</td>
-          <td>{{ item.DB_ID }}</td>
         </tr>
       </tbody>
     </template>
@@ -48,10 +44,18 @@ export default {
   methods: {
     getMemory() {
       axios
-        .get("localhost:4444/memory")
-        .then((res) => (this.memory = res.data))
+        .get("http://localhost:4444/memory", {
+          "Content-Type": "application/json",
+        })
+        .then((res) => {
+          console.log(res.data);
+          this.memory = res.data;
+        })
         .catch((erro) => console.log(erro));
     },
+  },
+  created() {
+    this.getMemory();
   },
   data() {
     return {

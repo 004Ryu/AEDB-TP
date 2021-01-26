@@ -5,10 +5,9 @@ module.exports.list = async () => {
   const res = [];
   try {
     conn = await db;
-    const query = `SELECT TABLESPACE_ID, TABLESPACE_NAME, STATUS, TYPE, SEGMENT_SPACE_MANAGEMENT, TIMESTAMP, DB_ID \
-    FROM TABLESPACES \
-    INNER JOIN DATABASE_INSTANCE DBI ON TABLESPACES.DB_ID = DBI.DB_ID \
-    WHERE TIMESTAMP = SYSDATE`;
+    const query = `SELECT TABLESPACE_ID, TABLESPACE_NAME, STATUS, TYPE, SEGMENT_SPACE_MANAGEMENT, TIMESTAMP \
+    FROM TRABALHOPDB.TABLESPACES \
+    ORDER BY TIMESTAMP DESC`;
     return conn.execute(query).then((data) => {
       data.rows.forEach((row) => {
         const aux = {};

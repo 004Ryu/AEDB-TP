@@ -44,10 +44,18 @@ export default {
   methods: {
     getProfiles() {
       axios
-        .get("localhost:4444/profiles")
-        .then((res) => (this.profiles = res.data))
+        .get("http://localhost:4444/profiles", {
+          "Content-Type": "application/json",
+        })
+        .then((res) => {
+          console.log(res.data);
+          this.profiles = res.data;
+        })
         .catch((erro) => console.log(erro));
     },
+  },
+  created() {
+    this.getProfiles();
   },
   data() {
     return {

@@ -5,7 +5,7 @@ module.exports.list = async () => {
   const res = [];
   try {
     conn = await db;
-    const query = `SELECT USER_ID, ROLE_ID\
+    const query = `SELECT UR.USER_ID, UR.ROLE_ID\
     FROM USERS_HAS_ROLES UR\
     INNER JOIN USERS U \
     ON UR.USER_ID = U.USER_ID \

@@ -21,9 +21,6 @@
           <th class="text-left">
             TIMESTAMP
           </th>
-          <th class="text-left">
-            DB_ID
-          </th>
         </tr>
       </thead>
       <tbody>
@@ -34,7 +31,6 @@
           <td>{{ item.TYPE }}</td>
           <td>{{ item.SEGMENT_SPACE_MANAGEMENT }}</td>
           <td>{{ item.TIMESTAMP }}</td>
-          <td>{{ item.DB_ID }}</td>
         </tr>
       </tbody>
     </template>
@@ -48,10 +44,18 @@ export default {
   methods: {
     getTablespaces() {
       axios
-        .get("localhost:4444/tablespaces")
-        .then((res) => (this.tablespaces = res.data))
+        .get("http://localhost:4444/tablespaces", {
+          "Content-Type": "application/json",
+        })
+        .then((res) => {
+          console.log(res.data);
+          this.tablespaces = res.data;
+        })
         .catch((erro) => console.log(erro));
     },
+  },
+  created() {
+    this.getTablespaces();
   },
   data() {
     return {

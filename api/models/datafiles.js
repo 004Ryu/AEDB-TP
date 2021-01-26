@@ -5,11 +5,11 @@ module.exports.list = async () => {
   const res = [];
   try {
     conn = await db;
-    const query = `SELECT DATAFILE_ID, DATAFILE_NAME, DIRECTORY, TOTAL_SPACE, AUTOEXTENSIBLE, FREE_SPACE, STATUS, TIMESTAMP, TABLESPACE_ID, \
-    DB_ID FROM DATAFILES \
-    INNER JOIN TABLESPACES T \
-    ON DATAFILES.TABLESPACE_ID = T.TABLESPACE_ID \
-    WHERE TIMESTAMP = SYSDATE`;
+    const query = `SELECT d.DATAFILE_ID, d.DATAFILE_NAME, d.DIRECTORY, d.TOTAL_SPACE, d.AUTOEXTENSIBLE, d.FREE_SPACE, d.STATUS, d.TIMESTAMP, d.TABLESPACE_ID \
+    FROM TRABALHOPDB.DATAFILES d \
+    INNER JOIN TRABALHOPDB.TABLESPACES t \
+    ON d.TABLESPACE_ID = t.TABLESPACE_ID \
+    ORDER BY TIMESTAMP DESC`;
     return conn.execute(query).then((data) => {
       data.rows.forEach((row) => {
         const aux = {};

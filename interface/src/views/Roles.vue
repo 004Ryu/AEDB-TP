@@ -40,10 +40,18 @@ export default {
   methods: {
     getRoles() {
       axios
-        .get("localhost:4444/roles")
-        .then((res) => (this.roles = res.data))
+        .get("http://localhost:4444/roles", {
+          "Content-Type": "application/json",
+        })
+        .then((res) => {
+          console.log(res.data);
+          this.roles = res.data;
+        })
         .catch((erro) => console.log(erro));
     },
+  },
+  created() {
+    this.getRoles();
   },
   data() {
     return {

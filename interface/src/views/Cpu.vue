@@ -64,10 +64,17 @@ export default {
   methods: {
     getCPU() {
       axios
-        .get("localhost:4444/cpu")
-        .then((res) => (this.cpu = res.data))
+        .get("http://localhost:4444/cpu", {
+          "Content-Type": "application/json",
+        })
+        .then((res) => {
+          this.cpu = res.data;
+        })
         .catch((erro) => console.log(erro));
     },
+  },
+  created() {
+    this.getCPU();
   },
   data() {
     return {

@@ -5,12 +5,13 @@ module.exports.list = async () => {
   const res = [];
   try {
     conn = await db;
-    const query = `SELECT USER_ID, USERNAME, ACCOUNT_STATUS, EXPIRY_DATE, DEFAULT_TABLESPACE, TEMPORARY_TABLESPACE, CREATED, \
-    COMMON, LAST_LOGIN, TIMESTAMP, PROFILE_ID \
-    FROM USERS \
-    INNER JOIN PROFILES P \
-    ON USERS.PROFILE_ID = P.PROFILE_ID \
-    WHERE TIMESTAMP = SYSDATE AND LAST_LOGIN = SYSDATE`;
+    const query = `SELECT u.USER_ID, u.USERNAME, u.ACCOUNT_STATUS, u.EXPIRY_DATE, u.DEFAULT_TABLESPACE, u.TEMPORARY_TABLESPACE, u.CREATED, \
+    u.COMMON, u.LAST_LOGIN, u.TIMESTAMP, u.PROFILE_ID \
+    FROM TRABALHOPDB.USERS u \
+    INNER JOIN TRABALHOPDB.PROFILES p \
+    ON u.PROFILE_ID = p.PROFILE_ID \
+    WHERE u.TIMESTAMP = SYSDATE AND u.LAST_LOGIN = SYSDATE \
+    ORDER BY TIMESTAMP DESC`;
     return conn.execute(query).then((data) => {
       data.rows.forEach((row) => {
         const aux = {};

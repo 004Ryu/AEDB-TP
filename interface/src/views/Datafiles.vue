@@ -25,10 +25,10 @@
             STATUS
           </th>
           <th class="text-left">
-            TIMESTAMP
+            TABLESPACE_ID
           </th>
           <th class="text-left">
-            TABLESPACE_ID
+            TIMESTAMP
           </th>
         </tr>
       </thead>
@@ -41,8 +41,8 @@
           <td>{{ item.AUTOEXTENSIBLE }}</td>
           <td>{{ item.FREE_SPACE }}</td>
           <td>{{ item.STATUS }}</td>
-          <td>{{ item.TIMESTAMP }}</td>
           <td>{{ item.TABLESPACE_ID }}</td>
+          <td>{{ item.TIMESTAMP }}</td>
         </tr>
       </tbody>
     </template>
@@ -56,10 +56,18 @@ export default {
   methods: {
     getDatafiles() {
       axios
-        .get("localhost:4444/datafiles")
-        .then((res) => (this.datafiles = res.data))
+        .get("http://localhost:4444/datafiles", {
+          "Content-Type": "application/json",
+        })
+        .then((res) => {
+          console.log(res.data);
+          this.datafiles = res.data;
+        })
         .catch((erro) => console.log(erro));
     },
+  },
+  created() {
+    this.getDatafiles();
   },
   data() {
     return {

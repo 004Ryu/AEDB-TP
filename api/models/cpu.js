@@ -7,9 +7,8 @@ module.exports.list = async () => {
     conn = await db;
     const query = `SELECT CPU_ID, DB_ID, SQL_ID, EXECUTIONS_DELTA, BUFFER_GETS_DELTA, DISK_READS_DELTA, IOWAIT_DELTA, APWAIT_DELTA, \
     CPU_TIME_DELTA, ELAPSED_TIME_DELTA, TIMESTAMP \
-    FROM CPU \
-    INNER JOIN DATABASE_INSTANCE DBI ON CPU.DB_ID = CPU.DB_ID \
-    WHERE TIMESTAMP = SYSDATE`;
+    FROM TRABALHOPDB.CPU \
+    ORDER BY TIMESTAMP DESC`;
     return conn.execute(query).then((data) => {
       data.rows.forEach((row) => {
         const aux = {};

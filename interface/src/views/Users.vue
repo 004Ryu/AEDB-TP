@@ -31,10 +31,10 @@
             LAST_LOGIN
           </th>
           <th class="text-left">
-            TIMESTAMP
+            PROFILE_ID
           </th>
           <th class="text-left">
-            PROFILE_ID
+            TIMESTAMP
           </th>
         </tr>
       </thead>
@@ -49,8 +49,8 @@
           <td>{{ item.CREATED }}</td>
           <td>{{ item.COMMON }}</td>
           <td>{{ item.LAST_LOGIN }}</td>
-          <td>{{ item.TIMESTAMP }}</td>
           <td>{{ item.PROFILE_ID }}</td>
+          <td>{{ item.TIMESTAMP }}</td>
         </tr>
       </tbody>
     </template>
@@ -64,10 +64,18 @@ export default {
   methods: {
     getUsers() {
       axios
-        .get("localhost:4444/users")
-        .then((res) => (this.users = res.data))
+        .get("http://localhost:4444/users", {
+          "Content-Type": "application/json",
+        })
+        .then((res) => {
+          console.log(res.data);
+          this.users = res.data;
+        })
         .catch((erro) => console.log(erro));
     },
+  },
+  created() {
+    this.getUsers();
   },
   data() {
     return {
