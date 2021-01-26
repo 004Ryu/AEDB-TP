@@ -90,9 +90,8 @@ def main():
         sql5_1 = "SELECT * FROM TABLESPACES"
 
         # (select info da orclpdb1 )
-        sql5_2 = "SELECT TABLESPACE_NAME, STATUS, CONTENTS, SEGMENT_SPACE_MANAGEMENT, \
-                        SYSTIMESTAMP \
-                        FROM DBA_TABLESPACES"
+        sql5_2 = "SELECT TABLESPACE_NAME, STATUS, CONTENTS, SEGMENT_SPACE_MANAGEMENT FROM DBA_TABLESPACES"
+        
         #Query6
         # (select info da trabalhoPDB)
         sql6 = "SELECT CPU_ID, DB_ID, SQL_ID, EXECUTIONS_DELTA. BUFFER_GETS_DELTA, DISK_READS_DELTA, IOWAIT_DELTA, APWAIT_DELTA, \
