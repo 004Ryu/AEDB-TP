@@ -7,7 +7,8 @@ module.exports.list = async () => {
     conn = await db;
     const query = `SELECT MEMORY_ID, FIXED_SIZE, VARIABLE_SIZE, DATABASE_BUFFERS, REDO_BUFFERS, TIMESTAMP \
     FROM TRABALHOPDB.MEMORY \
-    ORDER BY TIMESTAMP DESC`;
+    ORDER BY TIMESTAMP DESC \
+    FETCH FIRST 300 ROWS ONLY`;
     return conn.execute(query).then((data) => {
       data.rows.forEach((row) => {
         const aux = {};

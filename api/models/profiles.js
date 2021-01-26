@@ -7,7 +7,8 @@ module.exports.list = async () => {
     conn = await db;
     const query = `SELECT PROFILE_ID, PROFILE_NAME, RESOURCE_NAME, RESOURCE_TYPE, LIMIT, TIMESTAMP \
     FROM TRABALHOPDB.PROFILES \
-    ORDER BY TIMESTAMP DESC`;
+    ORDER BY TIMESTAMP DESC \
+    FETCH FIRST 300 ROWS ONLY`;
     return conn.execute(query).then((data) => {
       data.rows.forEach((row) => {
         const aux = {};

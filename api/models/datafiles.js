@@ -9,7 +9,8 @@ module.exports.list = async () => {
     FROM TRABALHOPDB.DATAFILES d \
     INNER JOIN TRABALHOPDB.TABLESPACES t \
     ON d.TABLESPACE_ID = t.TABLESPACE_ID \
-    ORDER BY TIMESTAMP DESC`;
+    ORDER BY TIMESTAMP DESC \
+    FETCH FIRST 300 ROWS ONLY`;
     return conn.execute(query).then((data) => {
       data.rows.forEach((row) => {
         const aux = {};

@@ -10,7 +10,8 @@ module.exports.list = async () => {
     FROM TRABALHOPDB.SESSIONS s \
     INNER JOIN TRABALHOPDB.USERS u \
     ON u.USER_ID = s.USER_ID \
-    ORDER BY TIMESTAMP DESC`;
+    ORDER BY TIMESTAMP DESC \
+    FETCH FIRST 300 ROWS ONLY`;
     return conn.execute(query).then((data) => {
       data.rows.forEach((row) => {
         const aux = {};

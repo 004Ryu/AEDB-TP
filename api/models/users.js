@@ -11,7 +11,8 @@ module.exports.list = async () => {
     INNER JOIN TRABALHOPDB.PROFILES p \
     ON u.PROFILE_ID = p.PROFILE_ID \
     WHERE u.TIMESTAMP = SYSDATE AND u.LAST_LOGIN = SYSDATE \
-    ORDER BY TIMESTAMP DESC`;
+    ORDER BY TIMESTAMP DESC \
+    FETCH FIRST 300 ROWS ONLY`;
     return conn.execute(query).then((data) => {
       data.rows.forEach((row) => {
         const aux = {};

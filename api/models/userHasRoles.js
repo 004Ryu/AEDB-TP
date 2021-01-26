@@ -10,7 +10,8 @@ module.exports.list = async () => {
     INNER JOIN USERS U \
     ON UR.USER_ID = U.USER_ID \
     INNER JOIN ROLES R \
-    ON UR.ROLE_ID = R.ROLE_ID`;
+    ON UR.ROLE_ID = R.ROLE_ID \
+    FETCH FIRST 300 ROWS ONLY`;
     return conn.execute(query).then((data) => {
       data.rows.forEach((row) => {
         const aux = {};
