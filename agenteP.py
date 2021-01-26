@@ -463,6 +463,52 @@ def main():
                 if list(row.keys())[0] == 'CPU_ID':
                         print(row)
                         print("\n")
+                        
+        #EXECUTE QUERY -------- TABLESPACE
+        print("\nInfo da tablespace no orclpdb1\n")
+        res = cur_pdb1.execute(sql5_2)
+        columns = [col[0] for col in res.description] 
+        res.rowfactory = lambda *args: dict(zip(columns, args))
+        res = res.fetchall() 
+        for row in res:
+                if list(row.keys())[0] == 'TABLESPACE_NAME':
+                        print(row)
+                        print("\n")
+
+        
+        for row in res:
+                if list(row.keys())[0] == 'TABLESPACE_NAME':
+                        try:
+                                row['TABLESPACE_ID'] = (randint(0,1000))
+                                ct = datetime.datetime.now()
+                                row['TIMESTAMP'] = ct
+                                print(row)
+                                print("\n")
+                                insert_sql = "INSERT INTO TABLESPACES (TABLESPACE_NAME, STATUS, TYPE, SEGMENT_SPACE_MANAGEMENT, TABLESPACE_ID, TIMESTAMP) \
+                                         values (:1, :2, :3, :4, :5, :6)"
+                                cur_pdb2.prepare(insert_sql)
+                                cur_pdb2.setinputsizes(cx_Oracle.DB_TYPE_VARCHAR, cx_Oracle.DB_TYPE_VARCHAR, cx_Oracle.DB_TYPE_VARCHAR, cx_Oracle.DB_TYPE_VARCHAR, cx_Oracle.DB_TYPE_NUMBER, cx_Oracle.DB_TYPE_TIMESTAMP)
+                                cur_pdb2.execute(None,list(row.values()))
+                                conn_pdb2.commit()
+                        except cx_Oracle.IntegrityError: 
+                                del row['TABLESPACE_ID']
+                                insert_sql = "UPDATE TABLESPACES SET TABLESPACE_NAME = :1, STATUS = :2, TYPE = :3, SEGMENT_SPACE_MANAGEMENT = :4, TIMESTAMP = :5"
+                                cur_pdb2.prepare(insert_sql)
+                                cur_pdb2.setinputsizes(cx_Oracle.DB_TYPE_VARCHAR, cx_Oracle.DB_TYPE_VARCHAR, cx_Oracle.DB_TYPE_VARCHAR, cx_Oracle.DB_TYPE_VARCHAR, cx_Oracle.DB_TYPE_TIMESTAMP)
+                                cur_pdb2.execute(None,list(row.values()))
+                                conn_pdb2.commit()
+                else:
+                        break
+
+        print("\nInfo da tablespace no trabalho\n")
+        res = cur_pdb2.execute(sql5_1)
+        columns = [col[0] for col in res.description] 
+        res.rowfactory = lambda *args: dict(zip(columns, args))
+        res = res.fetchall()
+        for row in res:
+                if list(row.keys())[0] == 'TABLESPACE_ID':
+                        print(row)
+                        print("\n")
                 
         conn_pdb2.commit()
 
