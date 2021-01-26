@@ -1,6 +1,6 @@
 const db = require("../config/db").connection;
 
-module.exports.list = () => {
+module.exports.list = async () => {
   var conn;
   const res = [];
   try {
@@ -22,5 +22,5 @@ module.exports.list = () => {
     });
   } catch (e) {
     console.log(e);
-  }  
+  }
 };

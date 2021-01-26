@@ -191,7 +191,7 @@ def main():
         res.rowfactory = lambda *args: dict(zip(columns, args))
         res = res.fetchall() 
 
-         for row in res:
+        for row in res:
                 if list(row.keys())[0] == 'USERNAME':
                         try:
                                 print("row no for do USERNAME: ")
