@@ -1,40 +1,10 @@
 <template>
-  <v-simple-table dark>
-    <template v-slot:default>
-      <thead>
-        <tr>
-          <th class="text-left">
-            MEMORY_ID
-          </th>
-          <th class="text-left">
-            FIXED_SIZE
-          </th>
-          <th class="text-left">
-            VARIABLE_SIZE
-          </th>
-          <th class="text-left">
-            DATABASE_BUFFERS
-          </th>
-          <th class="text-left">
-            REDO_BUFFERS
-          </th>
-          <th class="text-left">
-            TIMESTAMP
-          </th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="item in memory" :key="item.MEMORY_ID">
-          <td>{{ item.MEMORY_ID }}</td>
-          <td>{{ item.FIXED_SIZE }}</td>
-          <td>{{ item.VARIABLE_SIZE }}</td>
-          <td>{{ item.DATABASE_BUFFERS }}</td>
-          <td>{{ item.REDO_BUFFERS }}</td>
-          <td>{{ item.TIMESTAMP }}</td>
-        </tr>
-      </tbody>
-    </template>
-  </v-simple-table>
+  <v-data-table
+    :headers="headers"
+    :items="memory"
+    :items-per-page="20"
+    class="elevation-1"
+  ></v-data-table>
 </template>
 
 <script>
@@ -59,6 +29,13 @@ export default {
   },
   data() {
     return {
+      headers: [
+        { text: "FIXED_SIZE", value: "FIXED_SIZE", align: "start" },
+        { text: "VARIABLE_SIZE", value: "VARIABLE_SIZE", align: "start" },
+        { text: "DATABASE_BUFFERS", value: "DATABASE_BUFFERS", align: "start" },
+        { text: "REDO_BUFFERS", value: "REDO_BUFFERS", align: "start" },
+        { text: "TIMESTAMP", value: "TIMESTAMP", align: "start" },
+      ],
       memory: [],
     };
   },

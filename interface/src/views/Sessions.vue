@@ -1,64 +1,10 @@
 <template>
-  <v-simple-table dark>
-    <template v-slot:default>
-      <thead>
-        <tr>
-          <th class="text-left">
-            SESSION_ID
-          </th>
-          <th class="text-left">
-            SAMPLE_TIME
-          </th>
-          <th class="text-left">
-            SQL_ID
-          </th>
-          <th class="text-left">
-            SQL_OP_NAME
-          </th>
-          <th class="text-left">
-            SQL_PLAN_OPERATION
-          </th>
-          <th class="text-left">
-            WAIT_CLASS
-          </th>
-          <th class="text-left">
-            WAIT_TIME
-          </th>
-          <th class="text-left">
-            SESSION_TYPE
-          </th>
-          <th class="text-left">
-            SESSION_STATE
-          </th>
-          <th class="text-left">
-            TIME_WAITED
-          </th>
-          <th class="text-left">
-            USER_ID
-          </th>
-          <th class="text-left">
-            TIMESTAMP
-          </th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="item in sessions" :key="item.SESSION_ID">
-          <td>{{ item.SESSION_ID }}</td>
-          <td>{{ item.SAMPLE_TIME }}</td>
-          <td>{{ item.SQL_ID }}</td>
-          <td>{{ item.SQL_OP_NAME }}</td>
-          <td>{{ item.SQL_PLAN_OPERATION }}</td>
-          <td>{{ item.WAIT_CLASS }}</td>
-          <td>{{ item.WAIT_TIME }}</td>
-          <td>{{ item.SESSION_TYPE }}</td>
-          <td>{{ item.SESSION_STATE }}</td>
-          <td>{{ item.TIME_WAITED }}</td>
-          <td>{{ item.USER_ID }}</td>
-          <td>{{ item.TIMESTAMP }}</td>
-        </tr>
-      </tbody>
-    </template>
-  </v-simple-table>
+  <v-data-table
+    :headers="headers"
+    :items="sessions"
+    :items-per-page="20"
+    class="elevation-1"
+  ></v-data-table>
 </template>
 
 <script>
@@ -83,6 +29,27 @@ export default {
   },
   data() {
     return {
+      headers: [
+        { text: "SAMPLE_TIME", value: "SAMPLE_TIME", align: "start" },
+        {
+          text: "SQL_ID",
+          value: "SQL_ID",
+          align: "start",
+        },
+        { text: "SQL_OP_NAME", value: "SQL_OP_NAME", align: "start" },
+        {
+          text: "SQL_PLAN_OPERATION",
+          value: "SQL_PLAN_OPERATION",
+          align: "start",
+        },
+        { text: "WAIT_CLASS", value: "WAIT_CLASS", align: "start" },
+        { text: "WAIT_TIME", value: "WAIT_TIME", align: "start" },
+        { text: "SESSION_TYPE", value: "SESSION_TYPE", align: "start" },
+        { text: "SESSION_STATE", value: "SESSION_STATE", align: "start" },
+        { text: "TIME_WAITED", value: "TIME_WAITED", align: "start" },
+        { text: "USER_ID", value: "USER_ID", align: "start" },
+        { text: "TIMESTAMP", value: "TIMESTAMP", align: "start" },
+      ],
       sessions: [],
     };
   },

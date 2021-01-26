@@ -1,60 +1,10 @@
 <template>
-  <v-simple-table dark>
-    <template v-slot:default>
-      <thead>
-        <tr>
-          <th class="text-left">
-            USER_ID
-          </th>
-          <th class="text-left">
-            USERNAME
-          </th>
-          <th class="text-left">
-            ACCOUNT_STATUS
-          </th>
-          <th class="text-left">
-            EXPIRY_DATE
-          </th>
-          <th class="text-left">
-            DEFAULT_TABLESPACE
-          </th>
-          <th class="text-left">
-            TEMPORARY_TABLESPACE
-          </th>
-          <th class="text-left">
-            CREATED
-          </th>
-          <th class="text-left">
-            COMMON
-          </th>
-          <th class="text-left">
-            LAST_LOGIN
-          </th>
-          <th class="text-left">
-            PROFILE_ID
-          </th>
-          <th class="text-left">
-            TIMESTAMP
-          </th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="item in users" :key="item.USER_ID">
-          <td>{{ item.USER_ID }}</td>
-          <td>{{ item.USERNAME }}</td>
-          <td>{{ item.ACCOUNT_STATUS }}</td>
-          <td>{{ item.EXPIRY_DATE }}</td>
-          <td>{{ item.DEFAULT_TABLESPACE }}</td>
-          <td>{{ item.TEMPORARY_TABLESPACE }}</td>
-          <td>{{ item.CREATED }}</td>
-          <td>{{ item.COMMON }}</td>
-          <td>{{ item.LAST_LOGIN }}</td>
-          <td>{{ item.PROFILE_ID }}</td>
-          <td>{{ item.TIMESTAMP }}</td>
-        </tr>
-      </tbody>
-    </template>
-  </v-simple-table>
+  <v-data-table
+    :headers="headers"
+    :items="users"
+    :items-per-page="20"
+    class="elevation-1"
+  ></v-data-table>
 </template>
 
 <script>
@@ -79,6 +29,35 @@ export default {
   },
   data() {
     return {
+      headers: [
+        { text: "USER_ID", value: "USER_ID", align: "start" },
+        {
+          text: "USERNAME",
+          value: "USERNAME",
+          align: "start",
+        },
+        { text: "ACCOUNT_STATUS", value: "ACCOUNT_STATUS", align: "start" },
+        {
+          text: "EXPIRY_DATE",
+          value: "EXPIRY_DATE",
+          align: "start",
+        },
+        {
+          text: "DEFAULT_TABLESPACE",
+          value: "DEFAULT_TABLESPACE",
+          align: "start",
+        },
+        {
+          text: "TEMPORARY_TABLESPACE",
+          value: "TEMPORARY_TABLESPACE",
+          align: "start",
+        },
+        { text: "CREATED", value: "CREATED", align: "start" },
+        { text: "COMMON", value: "COMMON", align: "start" },
+        { text: "LAST_LOGIN", value: "LAST_LOGIN", align: "start" },
+        { text: "PROFILE_ID", value: "PROFILE_ID", align: "start" },
+        { text: "TIMESTAMP", value: "TIMESTAMP", align: "start" },
+      ],
       users: [],
     };
   },

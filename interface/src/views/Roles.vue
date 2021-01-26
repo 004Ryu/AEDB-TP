@@ -1,36 +1,10 @@
 <template>
-  <v-simple-table dark>
-    <template v-slot:default>
-      <thead>
-        <tr>
-          <th class="text-left">
-            ROLE_ID
-          </th>
-          <th class="text-left">
-            ROLE_NAME
-          </th>
-          <th class="text-left">
-            AUTHENTICATION_TYPE
-          </th>
-          <th class="text-left">
-            COMMON
-          </th>
-          <th class="text-left">
-            TIMESTAMP
-          </th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="item in roles" :key="item.ROLE_ID">
-          <td>{{ item.ROLE_ID }}</td>
-          <td>{{ item.ROLE_NAME }}</td>
-          <td>{{ item.AUTHENTICATION_TYPE }}</td>
-          <td>{{ item.COMMON }}</td>
-          <td>{{ item.TIMESTAMP }}</td>
-        </tr>
-      </tbody>
-    </template>
-  </v-simple-table>
+  <v-data-table
+    :headers="headers"
+    :items="roles"
+    :items-per-page="20"
+    class="elevation-1"
+  ></v-data-table>
 </template>
 
 <script>
@@ -55,6 +29,16 @@ export default {
   },
   data() {
     return {
+      headers: [
+        { text: "ROLE_NAME", value: "ROLE_NAME", align: "start" },
+        {
+          text: "AUTHENTICATION_TYPE",
+          value: "AUTHENTICATION_TYPE",
+          align: "start",
+        },
+        { text: "COMMON", value: "COMMON", align: "start" },
+        { text: "TIMESTAMP", value: "TIMESTAMP", align: "start" },
+      ],
       roles: [],
     };
   },

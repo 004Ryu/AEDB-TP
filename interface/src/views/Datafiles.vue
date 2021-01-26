@@ -1,52 +1,10 @@
 <template>
-  <v-simple-table dark>
-    <template v-slot:default>
-      <thead>
-        <tr>
-          <th class="text-left">
-            DATAFILE_ID
-          </th>
-          <th class="text-left">
-            DATAFILE_NAME
-          </th>
-          <th class="text-left">
-            DIRECTORY
-          </th>
-          <th class="text-left">
-            TOTAL_SPACE
-          </th>
-          <th class="text-left">
-            AUTOEXTENSIBLE
-          </th>
-          <th class="text-left">
-            FREE_SPACE
-          </th>
-          <th class="text-left">
-            STATUS
-          </th>
-          <th class="text-left">
-            TABLESPACE_ID
-          </th>
-          <th class="text-left">
-            TIMESTAMP
-          </th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="item in datafiles" :key="item.DATAFILE_ID">
-          <td>{{ item.DATAFILE_ID }}</td>
-          <td>{{ item.DATAFILE_NAME }}</td>
-          <td>{{ item.DIRECTORY }}</td>
-          <td>{{ item.TOTAL_SPACE }}</td>
-          <td>{{ item.AUTOEXTENSIBLE }}</td>
-          <td>{{ item.FREE_SPACE }}</td>
-          <td>{{ item.STATUS }}</td>
-          <td>{{ item.TABLESPACE_ID }}</td>
-          <td>{{ item.TIMESTAMP }}</td>
-        </tr>
-      </tbody>
-    </template>
-  </v-simple-table>
+  <v-data-table
+    :headers="headers"
+    :items="datafiles"
+    :items-per-page="20"
+    class="elevation-1"
+  ></v-data-table>
 </template>
 
 <script>
@@ -71,6 +29,20 @@ export default {
   },
   data() {
     return {
+      headers: [
+        { text: "DATAFILE_NAME", value: "DATAFILE_NAME", align: "start" },
+        { text: "DIRECTORY", value: "DIRECTORY", align: "start" },
+        { text: "TOTAL_SPACE", value: "TOTAL_SPACE", align: "start" },
+        { text: "AUTOEXTENSIBLE", value: "AUTOEXTENSIBLE", align: "start" },
+        {
+          text: "FREE_SPACE",
+          value: "FREE_SPACE",
+          align: "start",
+        },
+        { text: "STATUS", value: "STATUS", align: "start" },
+        { text: "TABLESPACE_ID", value: "TABLESPACE_ID", align: "start" },
+        { text: "TIMESTAMP", value: "TIMESTAMP", align: "start" },
+      ],
       datafiles: [],
     };
   },

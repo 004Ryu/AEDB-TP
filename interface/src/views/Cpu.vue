@@ -1,60 +1,10 @@
 <template>
-  <v-simple-table dark>
-    <template v-slot:default>
-      <thead>
-        <tr>
-          <th class="text-left">
-            CPU_ID
-          </th>
-          <th class="text-left">
-            DB_ID
-          </th>
-          <th class="text-left">
-            SQL_ID
-          </th>
-          <th class="text-left">
-            EXECUTIONS_DELTA
-          </th>
-          <th class="text-left">
-            BUFFER_GETS_DELTA
-          </th>
-          <th class="text-left">
-            DISK_READS_DELTA
-          </th>
-          <th class="text-left">
-            IOWAIT_DELTA
-          </th>
-          <th class="text-left">
-            APWAIT_DELTA
-          </th>
-          <th class="text-left">
-            CPU_TIME_DELTA
-          </th>
-          <th class="text-left">
-            ELAPSED_TIME_DELTA
-          </th>
-          <th class="text-left">
-            TIMESTAMP
-          </th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="item in cpu" :key="item.CPU_ID">
-          <td>{{ item.CPU_ID }}</td>
-          <td>{{ item.DB_ID }}</td>
-          <td>{{ item.SQL_ID }}</td>
-          <td>{{ item.EXECUTIONS_DELTA }}</td>
-          <td>{{ item.BUFFER_GETS_DELTA }}</td>
-          <td>{{ item.DISK_READS_DELTA }}</td>
-          <td>{{ item.IOWAIT_DELTA }}</td>
-          <td>{{ item.APWAIT_DELTA }}</td>
-          <td>{{ item.CPU_TIME_DELTA }}</td>
-          <td>{{ item.ELAPSED_TIME_DELTA }}</td>
-          <td>{{ item.TIMESTAMP }}</td>
-        </tr>
-      </tbody>
-    </template>
-  </v-simple-table>
+  <v-data-table
+    :headers="headers"
+    :items="cpu"
+    :items-per-page="20"
+    class="elevation-1"
+  ></v-data-table>
 </template>
 
 <script>
@@ -78,6 +28,27 @@ export default {
   },
   data() {
     return {
+      headers: [
+        { text: "CPU_ID", value: "CPU_ID", align: "start" },
+        { text: "DB_ID", value: "DB_ID", align: "start" },
+        { text: "SQL_ID", value: "SQL_ID", align: "start" },
+        { text: "EXECUTIONS_DELTA", value: "EXECUTIONS_DELTA", align: "start" },
+        {
+          text: "BUFFER_GETS_DELTA",
+          value: "BUFFER_GETS_DELTA",
+          align: "start",
+        },
+        { text: "DISK_READS_DELTA", value: "DISK_READS_DELTA", align: "start" },
+        { text: "IOWAIT_DELTA", value: "IOWAIT_DELTA", align: "start" },
+        { text: "APWAIT_DELTA", value: "APWAIT_DELTA", align: "start" },
+        { text: "CPU_TIME_DELTA", value: "CPU_TIME_DELTA", align: "start" },
+        {
+          text: "ELAPSED_TIME_DELTA",
+          value: "ELAPSED_TIME_DELTA",
+          align: "start",
+        },
+        { text: "TIMESTAMP", value: "TIMESTAMP", align: "start" },
+      ],
       cpu: [],
     };
   },

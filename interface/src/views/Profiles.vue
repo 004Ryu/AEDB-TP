@@ -1,40 +1,10 @@
 <template>
-  <v-simple-table dark>
-    <template v-slot:default>
-      <thead>
-        <tr>
-          <th class="text-left">
-            PROFILE_ID
-          </th>
-          <th class="text-left">
-            PROFILE_NAME
-          </th>
-          <th class="text-left">
-            RESOURCE_NAME
-          </th>
-          <th class="text-left">
-            RESOURCE_TYPE
-          </th>
-          <th class="text-left">
-            LIMIT
-          </th>
-          <th class="text-left">
-            TIMESTAMP
-          </th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="item in profiles" :key="item.PROFILE_ID">
-          <td>{{ item.PROFILE_ID }}</td>
-          <td>{{ item.PROFILE_NAME }}</td>
-          <td>{{ item.RESOURCE_NAME }}</td>
-          <td>{{ item.RESOURCE_TYPE }}</td>
-          <td>{{ item.LIMIT }}</td>
-          <td>{{ item.TIMESTAMP }}</td>
-        </tr>
-      </tbody>
-    </template>
-  </v-simple-table>
+  <v-data-table
+    :headers="headers"
+    :items="profiles"
+    :items-per-page="20"
+    class="elevation-1"
+  ></v-data-table>
 </template>
 
 <script>
@@ -59,6 +29,13 @@ export default {
   },
   data() {
     return {
+      headers: [
+        { text: "PROFILE_NAME", value: "PROFILE_NAME", align: "start" },
+        { text: "RESOURCE_NAME", value: "RESOURCE_NAME", align: "start" },
+        { text: "RESOURCE_TYPE", value: "RESOURCE_TYPE", align: "start" },
+        { text: "LIMIT", value: "LIMIT", align: "start" },
+        { text: "TIMESTAMP", value: "TIMESTAMP", align: "start" },
+      ],
       profiles: [],
     };
   },
