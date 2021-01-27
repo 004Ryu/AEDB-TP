@@ -47,11 +47,6 @@ export default {
           value: "DEFAULT_TABLESPACE",
           align: "start",
         },
-        {
-          text: "TEMPORARY_TABLESPACE",
-          value: "TEMPORARY_TABLESPACE",
-          align: "start",
-        },
         { text: "CREATED", value: "CREATED", align: "start" },
         { text: "COMMON", value: "COMMON", align: "start" },
         { text: "LAST_LOGIN", value: "LAST_LOGIN", align: "start" },
