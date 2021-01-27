@@ -51,6 +51,7 @@ export default {
         { text: "COMMON", value: "COMMON", align: "start" },
         { text: "LAST_LOGIN", value: "LAST_LOGIN", align: "start" },
         { text: "PROFILE_ID", value: "PROFILE_ID", align: "start" },
+        { text: "ROLE_NAME", value: "ROLE_NAME", align: "start" },
         { text: "TIMESTAMP", value: "TIMESTAMP", align: "start" },
       ],
       users: [],
