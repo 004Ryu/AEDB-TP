@@ -2,7 +2,6 @@ import cx_Oracle
 from random import randint
 import string
 from time import time, sleep
-import time
 import datetime
 import types
 import re
@@ -59,12 +58,7 @@ def main():
 
         #Query3
         # (select info da trabalhoPDB)
-        sql3 = "SELECT USER_ID, ROLE_ID\
-                FROM USERS_HAS_ROLES UR\
-                INNER JOIN USERS U \
-                ON UR.USER_ID = U.USER_ID \
-                INNER JOIN ROLES R \
-                ON UR.ROLE_ID = R.ROLE_ID"
+        sql3 = "SELECT USER_ID, ROLE_ID FROM USERS_HAS_ROLES UR"
 
         #Query4
         # (select info da trabalhoPDB)
@@ -77,14 +71,7 @@ def main():
         sql4_1 = "SELECT * FROM DATAFILES"
         
         # (select info da orclpdb1 )
-        '''
-        sql4_2 = "SELECT a.FILE_NAME, a.FILE_ID, a.TABLESPACE_NAME, a.BYTES,\
-                        a.AUTOEXTENSIBLE, b.FREE_BYTES, a.ONLINE_STATUS, SYSTIMESTAMP\
-                        FROM dba_data_files a, \
-                        (SELECT file_id, SUM(bytes) free_bytes \
-                        FROM dba_free_space b GROUP BY file_id) b \
-                        WHERE a.file_id=b.file_id"
-        '''
+
         sql4_2 = "SELECT a.FILE_NAME, a.FILE_ID, a.TABLESPACE_NAME, a.BYTES,\
                         a.AUTOEXTENSIBLE, b.FREE_BYTES, a.ONLINE_STATUS\
                         FROM dba_data_files a, \
@@ -101,11 +88,7 @@ def main():
         sql5_1 = "SELECT * FROM TABLESPACES"
 
         # (select info da orclpdb1 )
-        '''
-        "SELECT TABLESPACE_NAME, STATUS, CONTENTS, SEGMENT_SPACE_MANAGEMENT, \
-                        SYSTIMESTAMP \
-                        FROM DBA_TABLESPACES"
-        '''
+
         sql5_2 = "SELECT TABLESPACE_NAME, STATUS, CONTENTS, SEGMENT_SPACE_MANAGEMENT FROM DBA_TABLESPACES"
         #Query6
         # (select info da trabalhoPDB)
@@ -117,11 +100,7 @@ def main():
         sql6_n = "SELECT * FROM CPU"
 
         # (select info da orclpdb1 )
-        '''
-        sql6_2 = " SELECT DBID, SQL_ID, EXECUTIONS_DELTA, DISK_READS_DELTA, BUFFER_GETS_DELTA, CPU_TIME_DELTA, ELAPSED_TIME_DELTA, \
-                IOWAIT_DELTA, APWAIT_DELTA, SYSTIMESTAMP \
-                FROM DBA_HIST_SQLSTAT"
-        '''
+
         sql6_2 = " SELECT DBID, SQL_ID, EXECUTIONS_DELTA, DISK_READS_DELTA, BUFFER_GETS_DELTA, CPU_TIME_DELTA, ELAPSED_TIME_DELTA, \
                 IOWAIT_DELTA, APWAIT_DELTA \
                 FROM DBA_HIST_SQLSTAT"
@@ -141,12 +120,8 @@ def main():
 
         #Query8
         # (select info da trabalhoPDB)
-        sql8 = "SELECT SESSION_ID, SAMPLE_TIME, SQL_ID, SQL_OP_NAME, SQL_PLAN_OPERATION, WAIT_CLASS, WAIT_TIME, \
-                SESSION_TYPE, SESSION_STATE, TIME_WAITED, TIMESTAMP, USER_ID \
-                FROM SESSIONS S \
-                INNER JOIN USERS U \
-                ON U.USER_ID = S.USER_ID \
-                WHERE TIMESTAMP = SYSDATE"
+        
+        sql8_N = "SELECT * FROM SESSIONS"
         
         # (select info da orclpdb1 )
         sql8_2 = "select\
@@ -161,6 +136,10 @@ def main():
                         where\
                         b.paddr = a.addr\
                         and type='USER'"
+
+        sql8 = "select session_id, sample_time, sql_id, sql_opname, sql_plan_operation, wait_class, wait_time, \
+                 session_type, session_state, time_waited, user_id from dba_hist_active_sess_history"
+
         #Query9
         # (select info da trabalhoPDB)
         sql9 = "SELECT ROLE_ID, ROLE_NAME, AUTHENTICATION_TYPE, COMMON, TIMESTAMP \
@@ -169,10 +148,7 @@ def main():
         sql9_1 = "SELECT * FROM ROLES "
 
         # (select info da orclpdb1 )
-        '''
-        sql9_2 = "SELECT ROLE, ROLE_ID, AUTHENTICATION_TYPE, COMMON, SYSDATE \
-                        FROM DBA_ROLES"
-        '''
+
         sql9_2 = "SELECT ROLE, AUTHENTICATION_TYPE, COMMON FROM DBA_ROLES"
         
         #Query10 
@@ -187,7 +163,7 @@ def main():
         
         sql10_aux = "SELECT PROFILE, RESOURCE_NAME, RESOURCE_TYPE, LIMIT, SYSDATE FROM DBA_PROFILES WHERE PROFILE = 'DEFAULT' "
         
-        '''
+
         #EXECUTE QUERY -------- DATABASE_INSTANCE
         print("\nInfo da database_instance na orclpdb1\n")
         res = cur_pdb1.execute(sql1_2)
@@ -228,10 +204,7 @@ def main():
         for row in s:
                 if list(row.keys())[0] == 'DB_ID':
                         print(row) 
-        '''
 
-        
-        '''
         #EXECUTE QUERY -------- ROLES
 
         print("\nInfo da roles na orclpdb1\n")
@@ -249,14 +222,16 @@ def main():
                                 print(row)
                                 insert_sql = "INSERT INTO ROLES (ROLE_NAME,AUTHENTICATION_TYPE, COMMON, TIMESTAMP, ROLE_ID) values (:1, :2, :3, :4, :5)" 
                                 cur_pdb2.prepare(insert_sql)
-                                cur_pdb2.setinputsizes(cx_Oracle.DB_TYPE_VARCHAR, cx_Oracle.DB_TYPE_VARCHAR, cx_Oracle.DB_TYPE_VARCHAR, cx_Oracle.TIMESTAMP, cx_Oracle.DB_TYPE_NUMBER,)
+                                cur_pdb2.setinputsizes(cx_Oracle.DB_TYPE_VARCHAR, cx_Oracle.DB_TYPE_VARCHAR, cx_Oracle.DB_TYPE_VARCHAR, cx_Oracle.DB_TYPE_TIMESTAMP, cx_Oracle.DB_TYPE_NUMBER,)
                                 cur_pdb2.execute(None,list(row.values()))
                                 conn_pdb2.commit()
                         except cx_Oracle.IntegrityError: 
+                                aux = row['ROLE_ID']
                                 del row['ROLE_ID']
-                                insert_sql = "UPDATE ROLES SET ROLE_NAME = :1, AUTHENTICATION_TYPE = :2, COMMON = :3, TIMESTAMP = :4"
+                                row['ROLE_ID'] = aux
+                                insert_sql = "UPDATE ROLES SET ROLE_NAME = :1, AUTHENTICATION_TYPE = :2, COMMON = :3, TIMESTAMP = :4 WHERE ROLE_ID = :5"
                                 cur_pdb2.prepare(insert_sql)
-                                cur_pdb2.setinputsizes(cx_Oracle.DB_TYPE_VARCHAR, cx_Oracle.DB_TYPE_VARCHAR, cx_Oracle.DB_TYPE_VARCHAR, cx_Oracle.TIMESTAMP)
+                                cur_pdb2.setinputsizes(cx_Oracle.DB_TYPE_VARCHAR, cx_Oracle.DB_TYPE_VARCHAR, cx_Oracle.DB_TYPE_VARCHAR, cx_Oracle.DB_TYPE_TIMESTAMP, cx_Oracle.NUMBER )
                                 cur_pdb2.execute(None,list(row.values()))
                                 conn_pdb2.commit()
                         except cx_Oracle.IntegrityError:
@@ -273,7 +248,6 @@ def main():
                 if list(row.keys())[0] == 'ROLE_ID':
                         print(row)  
         
-        '''
 
         #EXECUTE QUERY -------- PROFILES
         print("\nInfo da profiles na orclpdb1\n")
@@ -282,6 +256,8 @@ def main():
         columns = [col[0] for col in res.description] 
         res.rowfactory = lambda *args: dict(zip(columns, args))
         res = res.fetchall() 
+        for row in res:
+                print(row)
 
         for row in res:
                 if list(row.keys())[0] == 'PROFILE':
@@ -289,21 +265,26 @@ def main():
                                 ct = datetime.datetime.now()
                                 row['TIMESTAMP'] = ct
                                 row['PROFILE_ID'] = (randint(0,1000))
-                                print(row)
                                 insert_sql = "INSERT INTO PROFILES (PROFILE_NAME, RESOURCE_NAME, RESOURCE_TYPE, LIMIT, TIMESTAMP, PROFILE_ID) \
                                          values (:1, :2, :3, :4, :5, :6)"
                                 cur_pdb2.prepare(insert_sql)
-                                cur_pdb2.setinputsizes(cx_Oracle.DB_TYPE_VARCHAR, cx_Oracle.DB_TYPE_VARCHAR, cx_Oracle.DB_TYPE_VARCHAR, cx_Oracle.DB_TYPE_VARCHAR, cx_Oracle.TIMESTAMP, cx_Oracle.DB_TYPE_NUMBER)
+                                cur_pdb2.setinputsizes(cx_Oracle.DB_TYPE_VARCHAR, cx_Oracle.DB_TYPE_VARCHAR, cx_Oracle.DB_TYPE_VARCHAR, cx_Oracle.DB_TYPE_VARCHAR, cx_Oracle.DB_TYPE_TIMESTAMP, cx_Oracle.DB_TYPE_NUMBER)
+                                print(row)
                                 cur_pdb2.execute(None,list(row.values()))
                                 conn_pdb2.commit()
+                                continue
                         except cx_Oracle.IntegrityError: 
+                                aux = row['PROFILE_ID']
                                 del row['PROFILE_ID']
-                                #row['PROFILE_ID'] = (randint(0,1000))
-                                insert_sql = "UPDATE PROFILES SET PROFILE_NAME = :1, RESOURCE_NAME = :2, RESOURCE_TYPE = :3, LIMIT = :4, TIMESTAMP = :5"
+                                row['PROFILE_ID'] = aux
+                                
+                                insert_sql = "UPDATE PROFILES SET PROFILE_NAME = :1, RESOURCE_NAME = :2, RESOURCE_TYPE = :3, LIMIT = :4, TIMESTAMP = :5 \
+                                                WHERE PROFILE_ID = :6"
                                 cur_pdb2.prepare(insert_sql)
-                                cur_pdb2.setinputsizes(cx_Oracle.DB_TYPE_VARCHAR, cx_Oracle.DB_TYPE_VARCHAR, cx_Oracle.DB_TYPE_VARCHAR, cx_Oracle.DB_TYPE_VARCHAR, cx_Oracle.TIMESTAMP)
+                                cur_pdb2.setinputsizes(cx_Oracle.DB_TYPE_VARCHAR, cx_Oracle.DB_TYPE_VARCHAR, cx_Oracle.DB_TYPE_VARCHAR, cx_Oracle.DB_TYPE_VARCHAR, cx_Oracle.DB_TYPE_TIMESTAMP, cx_Oracle.DB_TYPE_NUMBER)
                                 cur_pdb2.execute(None,list(row.values()))
                                 conn_pdb2.commit()
+                                continue
                 else:
                         break
              
@@ -315,8 +296,7 @@ def main():
         for row in s:
                 if list(row.keys())[0] == 'PROFILE_ID':
                         print(row)
-        
-        '''
+
         #EXECUTE QUERY -------- USERS
         print("\nInfo da users no orclpdb1\n")
         res = cur_pdb1.execute(sql2_2)
@@ -371,7 +351,6 @@ def main():
                                         cur_pdb2.prepare(insert_sql)
                                         cur_pdb2.setinputsizes(cx_Oracle.DB_TYPE_VARCHAR, cx_Oracle.DB_TYPE_NUMBER, cx_Oracle.DB_TYPE_VARCHAR, cx_Oracle.DB_TYPE_TIMESTAMP, cx_Oracle.DB_TYPE_VARCHAR, cx_Oracle.DB_TYPE_VARCHAR, cx_Oracle.DB_TYPE_VARCHAR, cx_Oracle.DB_TYPE_NUMBER, cx_Oracle.DB_TYPE_TIMESTAMP)
                                         cur_pdb2.execute(None,list(row.values())) 
-                                        print(row['USERNAME'])
                                         conn_pdb2.commit()
                                         continue
                                 else : 
@@ -381,7 +360,6 @@ def main():
                                         cur_pdb2.prepare(insert_sql)
                                         cur_pdb2.setinputsizes(cx_Oracle.DB_TYPE_VARCHAR, cx_Oracle.DB_TYPE_NUMBER, cx_Oracle.DB_TYPE_VARCHAR, cx_Oracle.DB_TYPE_TIMESTAMP, cx_Oracle.DB_TYPE_VARCHAR, cx_Oracle.DB_TYPE_VARCHAR, cx_Oracle.DB_TYPE_VARCHAR, cx_Oracle.DB_TYPE_TIMESTAMP, cx_Oracle.DB_TYPE_NUMBER, cx_Oracle.DB_TYPE_TIMESTAMP)
                                         cur_pdb2.execute(None,list(row.values()))
-                                        print(row['USERNAME'])
                                         conn_pdb2.commit()
                                         continue
                         except cx_Oracle.IntegrityError:  
@@ -395,7 +373,6 @@ def main():
                                         cur_pdb2.prepare(insert_sql)
                                         cur_pdb2.setinputsizes(cx_Oracle.DB_TYPE_VARCHAR, cx_Oracle.DB_TYPE_VARCHAR, cx_Oracle.DB_TYPE_TIMESTAMP, cx_Oracle.DB_TYPE_VARCHAR, cx_Oracle.DB_TYPE_VARCHAR, cx_Oracle.DB_TYPE_VARCHAR, cx_Oracle.DB_TYPE_NUMBER, cx_Oracle.DB_TYPE_TIMESTAMP, cx_Oracle.DB_TYPE_NUMBER)
                                         cur_pdb2.execute(None,list(row.values())) 
-                                        print(row['USERNAME'])
                                         conn_pdb2.commit() 
                                         continue
 
@@ -409,7 +386,6 @@ def main():
                                         cur_pdb2.prepare(insert_sql)
                                         cur_pdb2.setinputsizes(cx_Oracle.DB_TYPE_VARCHAR, cx_Oracle.DB_TYPE_VARCHAR, cx_Oracle.DB_TYPE_TIMESTAMP, cx_Oracle.DB_TYPE_VARCHAR, cx_Oracle.DB_TYPE_VARCHAR, cx_Oracle.DB_TYPE_VARCHAR, cx_Oracle.DB_TYPE_TIMESTAMP, cx_Oracle.DB_TYPE_NUMBER, cx_Oracle.DB_TYPE_TIMESTAMP, cx_Oracle.DB_TYPE_NUMBER)
                                         cur_pdb2.execute(None,list(row.values())) 
-                                        print(row['USERNAME'])
                                         conn_pdb2.commit()
                                         continue
                 else:
@@ -424,59 +400,131 @@ def main():
                 if list(row.keys())[0] == 'USER_ID':
                         print(row)
 
-        '''
-
-        '''
 
         #EXECUTE QUERY -------- USERS_HAS_ROLES
-        ########## !!!!!!!!!!!!!!!!!!!!!!! #############################
 
         print("\nInfo da users_has_roles no trabalho\n")
+        q = "SELECT USERNAME, GRANTED_ROLE FROM USER_ROLE_PRIVS"
+        res = cur_pdb1.execute(q)
+        columns = [col[0] for col in res.description] 
+        res.rowfactory = lambda *args: dict(zip(columns, args))
+        res = res.fetchall() 
+        for row in res:
+                print(row)
+
+        for row in res:
+                if list(row.keys())[0] == 'USERNAME':
+                        try:
+                                aux_q1 = "SELECT USER_ID FROM USERS WHERE USERNAME = :1"
+                                cur_pdb2.prepare(aux_q1)
+                                cur_pdb2.setinputsizes(cx_Oracle.DB_TYPE_VARCHAR)
+                                u_id = cur_pdb2.execute(None,[list(row.values())[0]])
+
+                                columns = [col[0] for col in u_id.description] 
+                                u_id.rowfactory = lambda *args: dict(zip(columns, args))
+                                u_id = u_id.fetchone()
+                                idU = list(u_id.values())[0]
+
+                                
+                                aux_q2 = "SELECT ROLE_ID FROM ROLES WHERE ROLE_NAME = :2"
+                                cur_pdb2.prepare(aux_q2)
+                                cur_pdb2.setinputsizes(cx_Oracle.DB_TYPE_VARCHAR)
+                                r_id = cur_pdb2.execute(None,[list(row.values())[1]])
+
+                                columns = [col[0] for col in r_id.description] 
+                                r_id.rowfactory = lambda *args: dict(zip(columns, args))
+                                r_id = r_id.fetchone()
+                                idR = list(r_id.values())[0]
+
+                                insert_sql = insert_sql = "INSERT INTO USERS_HAS_ROLES (USER_ID, ROLE_ID) values \
+                                        (:1, :2)"
+                                cur_pdb2.prepare(insert_sql)
+                                cur_pdb2.setinputsizes(cx_Oracle.DB_TYPE_NUMBER, cx_Oracle.DB_TYPE_NUMBER)
+                                cur_pdb2.execute(None,[idU,idR])
+                                conn_pdb2.commit()
+
+                        except cx_Oracle.IntegrityError: 
+                                aux = row['USER_ID']
+                                del row['USER_ID']
+                                row['USER_ID'] = aux
+
+                                aux2 = row['ROLE_ID']
+                                del row['ROLE_ID']
+                                row['ROLE_ID'] = aux2
+
+                                insert_sql = "UPDATE USERS_HAS_ROLES SET USER_ID = :1, ROLE_ID = :2"
+                                cur_pdb2.prepare(insert_sql)
+                                cur_pdb2.setinputsizes(cx_Oracle.DB_TYPE_NUMBER, cx_Oracle.DB_TYPE_NUMBER)
+                                cur_pdb2.execute(None,list(row.values()))
+                                conn_pdb2.commit()
+                else:
+                        break
+
+        
+
+        print("\nInfo da users_has_roles no trabalho AFTER\n")
         res = cur_pdb2.execute(sql3)
         columns = [col[0] for col in res.description] 
         res.rowfactory = lambda *args: dict(zip(columns, args))
         res = res.fetchall()
+        for row in res:
+                if (list(row.keys())[0] == 'USER_ID'):
+                        print(row)      
 
-        ########## !!!!!!!!!!!!!!!!!!!!!!! #############################
-
-        '''
-
-        '''
+        
         #EXECUTE QUERY -------- SESSIONS
         print("\nInfo da SESSIONS no orclpdb1\n")
-        res = cur_pdb1.execute(sql8_2)
+        res = cur_pdb1.execute(sql8)
         columns = [col[0] for col in res.description] 
         res.rowfactory = lambda *args: dict(zip(columns, args))
         res = res.fetchall() 
+        for row in res:
+                if list(row.keys())[0] == 'SESSION_ID':
+                        print(row)
+        print("\n\n\n")
 
 
         for row in res:
-                if list(row.keys())[0] == 'PID':
+                if list(row.keys())[0] == 'SESSION_ID':
                         try:
-                                print(row)
-                                print("\n")
-                                insert_sql = "INSERT INTO SESSIONS (SESSION_ID, SAMPLE_TIME, SQL_ID, SQL_OP_NAME, SQL_PLAN_OPERATION, WAIT_CLASS, WAIT_TIME, SESSION_TYPE, SESSION_STATE, TIME_WAITED, TIMESTAMP, USER_ID) values (:1, :2, :3, :4, :5, :6, :7, :8, :9, :10, :11, :12)"
+                                ct = datetime.datetime.now()
+                                row['TIMESTAMP'] = ct 
+
+                                insert_sql = "INSERT INTO SESSIONS (SESSION_ID, SAMPLE_TIME, SQL_ID, SQL_OP_NAME, \
+                                SQL_PLAN_OPERATION, WAIT_CLASS, WAIT_TIME, SESSION_TYPE, SESSION_STATE, TIME_WAITED, \
+                                USER_ID, TIMESTAMP) values (:1, :2, :3, :4, :5, :6, :7, :8, :9, :10, :11, :12)"
                                 cur_pdb2.prepare(insert_sql)
-                                cur_pdb2.setinputsizes(cx_Oracle.DB_TYPE_VARCHAR, cx_Oracle.DB_TYPE_VARCHAR, cx_Oracle.DB_TYPE_VARCHAR, cx_Oracle.DB_TYPE_VARCHAR, cx_Oracle.TIMESTAMP, cx_Oracle.DB_TYPE_NUMBER)
+                                cur_pdb2.setinputsizes( cx_Oracle.DB_TYPE_NUMBER,cx_Oracle.DB_TYPE_TIMESTAMP,cx_Oracle.DB_TYPE_VARCHAR,cx_Oracle.DB_TYPE_VARCHAR, cx_Oracle.DB_TYPE_VARCHAR,cx_Oracle.DB_TYPE_VARCHAR,cx_Oracle.DB_TYPE_NUMBER,cx_Oracle.DB_TYPE_VARCHAR,cx_Oracle.DB_TYPE_VARCHAR,cx_Oracle.DB_TYPE_NUMBER,cx_Oracle.DB_TYPE_NUMBER,cx_Oracle.DB_TYPE_TIMESTAMP)
                                 cur_pdb2.execute(None,list(row.values()))
                                 conn_pdb2.commit()
                         except cx_Oracle.IntegrityError: 
-                                insert_sql = "UPDATE SESSIONS SET SESSION_ID = :1, SAMPLE_TIME = :2, SQL_ID = :3, SQL_OP_NAME = :4, SQL_PLAN_OPERATION = :5, WAIT_CLASS = :6, WAIT_TIME = :7, SESSION_TYPE = :8, SESSION_STATE = :9, TIME_WAITED = :10, TIMESTAMP = :11, USER_ID = :12"
-                                cur_pdb2.execute(insert_sql, list(row.values()))
+                                aux = row['SESSION_ID']
+                                del row['SESSION_ID']
+                                row['SESSION_ID'] = aux
+                                insert_sql = "UPDATE SESSIONS SET SAMPLE_TIME = :1, SQL_ID = :2, SQL_OP_NAME = :3,\
+                                 SQL_PLAN_OPERATION = :5, WAIT_CLASS = :6, \
+                                 WAIT_TIME = :7, SESSION_TYPE = :8, SESSION_STATE = :9, \
+                                 TIME_WAITED = :10, USER_ID = :11, TIMESTAMP = :12\
+                                 WHERE SESSION_ID = :13"
+                                cur_pdb2.prepare(insert_sql)
+                                cur_pdb2.setinputsizes(cx_Oracle.DB_TYPE_TIMESTAMP,cx_Oracle.DB_TYPE_VARCHAR,cx_Oracle.DB_TYPE_VARCHAR, cx_Oracle.DB_TYPE_VARCHAR,cx_Oracle.DB_TYPE_VARCHAR,cx_Oracle.DB_TYPE_NUMBER,cx_Oracle.DB_TYPE_VARCHAR,cx_Oracle.DB_TYPE_VARCHAR,cx_Oracle.DB_TYPE_NUMBER,cx_Oracle.DB_TYPE_NUMBER,cx_Oracle.DB_TYPE_TIMESTAMP)
+                                cur_pdb2.execute(None,list(row.values()))
                                 conn_pdb2.commit()
                 else:
                         break
 
         print("\nInfo da SESSIONS no TRABALHO\n")
-        res = cur_pdb2.execute(sql8)
+        res = cur_pdb2.execute(sql8_N)
         columns = [col[0] for col in res.description] 
         res.rowfactory = lambda *args: dict(zip(columns, args))
         res = res.fetchall() 
+        for row in res:
+                if list(row.keys())[0] == 'SESSION_ID':
+                        print(row)
+        print("\n\n\n\n")
 
-        '''
-
-        '''
-
+        
+        
         #EXECUTE QUERY -------- MEMORY
         print("\nInfo da memory no orclpdb1\n")
         res = cur_pdb1.execute(sql7_2)
@@ -491,6 +539,7 @@ def main():
         for row in res:
                 if list(row.keys())[0] == 'NAME' and list(row.values())[0] == 'Fixed Size': 
                         try:
+                                flag = 1
                                 row['MEMORY_ID'] = (randint(0,1000))
                                 del row['NAME']
                                 ct = datetime.datetime.now()
@@ -503,18 +552,25 @@ def main():
                                 cur_pdb2.execute(None,list(row.values()))
                                 conn_pdb2.commit()
                         except cx_Oracle.IntegrityError: 
+                                if( flag == 0):
+                                                del row['NAME']
+                                
+                                aux = row['MEMORY_ID']
                                 del row['MEMORY_ID']
-                                del row['NAME']
+                                row['MEMORY_ID'] = aux
+
                                 ct = datetime.datetime.now()
                                 row['TIMESTAMP'] = ct
-                                insert_sql = "UPDATE MEMORY SET FIXED_SIZE = :1, TIMESTAMP = :2"
+                                insert_sql = "UPDATE MEMORY SET FIXED_SIZE = :1, TIMESTAMP = :2 WHERE MEMORY_ID = :3 "
                                 cur_pdb2.prepare(insert_sql)
-                                cur_pdb2.setinputsizes(cx_Oracle.DB_TYPE_NUMBER, cx_Oracle.DB_TYPE_TIMESTAMP)
+                                cur_pdb2.setinputsizes(cx_Oracle.DB_TYPE_NUMBER, cx_Oracle.DB_TYPE_TIMESTAMP, cx_Oracle.DB_TYPE_NUMBER)
                                 cur_pdb2.execute(None,list(row.values()))
                                 conn_pdb2.commit()
+                                flag = 0
                 else : 
                         if list(row.keys())[0] == 'NAME' and list(row.values())[0] == 'Variable Size': 
                                 try:
+                                        flag = 1
                                         row['MEMORY_ID'] = (randint(0,1000))
                                         del row['NAME']
                                         ct = datetime.datetime.now()
@@ -526,19 +582,28 @@ def main():
                                         cur_pdb2.setinputsizes(cx_Oracle.DB_TYPE_NUMBER, cx_Oracle.DB_TYPE_NUMBER, cx_Oracle.DB_TYPE_TIMESTAMP)
                                         cur_pdb2.execute(None,list(row.values()))
                                         conn_pdb2.commit()
+                                        flag = 0
                                 except cx_Oracle.IntegrityError: 
+                                        if( flag == 0):
+                                                del row['NAME']
+
+                                        aux = row['MEMORY_ID']
                                         del row['MEMORY_ID']
-                                        del row['NAME']
+                                        row['MEMORY_ID'] = aux
+
                                         ct = datetime.datetime.now()
                                         row['TIMESTAMP'] = ct
-                                        insert_sql = "UPDATE MEMORY SET VARIABLE_SIZE = :1, TIMESTAMP = :2"
+                                        insert_sql = "UPDATE MEMORY SET VARIABLE_SIZE = :1, TIMESTAMP = :2 WHERE MEMORY_ID = :3"
                                         cur_pdb2.prepare(insert_sql)
-                                        cur_pdb2.setinputsizes(cx_Oracle.DB_TYPE_NUMBER)
+                                        cur_pdb2.setinputsizes(cx_Oracle.DB_TYPE_NUMBER, cx_Oracle.DB_TYPE_TIMESTAMP, cx_Oracle.DB_TYPE_NUMBER)
                                         cur_pdb2.execute(None,list(row.values()))
                                         conn_pdb2.commit()
+                                        flag = 0
+                                                
                         else:
                                 if list(row.keys())[0] == 'NAME' and list(row.values())[0] == 'Database Buffers': 
                                         try:
+                                                flag = 1
                                                 row['MEMORY_ID'] = (randint(0,1000))
                                                 del row['NAME']
                                                 ct = datetime.datetime.now()
@@ -551,18 +616,26 @@ def main():
                                                 cur_pdb2.execute(None,list(row.values()))
                                                 conn_pdb2.commit()
                                         except cx_Oracle.IntegrityError: 
+                                                if( flag == 0):
+                                                        del row['NAME']
+
+                                                aux = row['MEMORY_ID']
                                                 del row['MEMORY_ID']
-                                                del row['NAME']
+                                                row['MEMORY_ID'] = aux
+
+                                                
                                                 ct = datetime.datetime.now()
                                                 row['TIMESTAMP'] = ct
-                                                insert_sql = "UPDATE MEMORY SET DATABASE_BUFFERS = :1, TIMESTAMP = :2"
+                                                insert_sql = "UPDATE MEMORY SET DATABASE_BUFFERS = :1, TIMESTAMP = :2 WHERE MEMORY_ID = :3"
                                                 cur_pdb2.prepare(insert_sql)
-                                                cur_pdb2.setinputsizes(cx_Oracle.DB_TYPE_NUMBER, cx_Oracle.DB_TYPE_TIMESTAMP)
+                                                cur_pdb2.setinputsizes(cx_Oracle.DB_TYPE_NUMBER, cx_Oracle.DB_TYPE_TIMESTAMP, cx_Oracle.DB_TYPE_NUMBER)
                                                 cur_pdb2.execute(None,list(row.values()))
                                                 conn_pdb2.commit()
+                                                flag = 0
                                 else:
                                         if list(row.keys())[0] == 'NAME' and list(row.values())[0] == 'Redo Buffers':
                                                 try:
+                                                        flag = 1
                                                         row['MEMORY_ID'] = (randint(0,1000))
                                                         del row['NAME']
                                                         ct = datetime.datetime.now()
@@ -575,19 +648,24 @@ def main():
                                                         cur_pdb2.execute(None,list(row.values()))
                                                         conn_pdb2.commit()
                                                 except cx_Oracle.IntegrityError: 
+                                                        if( flag == 0):
+                                                                del row['NAME']
+
+                                                        aux = row['MEMORY_ID']
                                                         del row['MEMORY_ID']
-                                                        del row['NAME']
+                                                        row['MEMORY_ID'] = aux
+
                                                         ct = datetime.datetime.now()
                                                         row['TIMESTAMP'] = ct
-                                                        insert_sql = "UPDATE MEMORY SET REDO_BUFFERS = :1, TIMESTAMP = :2"
+                                                        insert_sql = "UPDATE MEMORY SET REDO_BUFFERS = :1, TIMESTAMP = :2 WHERE MEMORY_ID = :3"
                                                         cur_pdb2.prepare(insert_sql)
-                                                        cur_pdb2.setinputsizes(cx_Oracle.DB_TYPE_NUMBER, cx_Oracle.DB_TYPE_TIMESTAMP)
+                                                        cur_pdb2.setinputsizes(cx_Oracle.DB_TYPE_NUMBER, cx_Oracle.DB_TYPE_TIMESTAMP, cx_Oracle.DB_TYPE_NUMBER)
                                                         cur_pdb2.execute(None,list(row.values()))
                                                         conn_pdb2.commit() 
+                                                        flag = 0
                                         else:
                                                 break
 
-                        
         
         print("\nInfo da memory no trabalho\n")
         s = cur_pdb2.execute(sql7_1)
@@ -598,10 +676,8 @@ def main():
                 if list(row.keys())[0] == 'MEMORY_ID':
                         print(row)
              
-        
-        '''
 
-        '''
+
         #EXECUTE QUERY -------- CPU
         print("\nInfo da cpu no orclpdb1\n")
         res = cur_pdb1.execute(sql6_2)
@@ -627,11 +703,16 @@ def main():
                                 cur_pdb2.setinputsizes(cx_Oracle.DB_TYPE_NUMBER, cx_Oracle.DB_TYPE_VARCHAR, cx_Oracle.DB_TYPE_NUMBER, cx_Oracle.DB_TYPE_NUMBER, cx_Oracle.DB_TYPE_NUMBER, cx_Oracle.DB_TYPE_NUMBER, cx_Oracle.DB_TYPE_NUMBER, cx_Oracle.DB_TYPE_NUMBER, cx_Oracle.DB_TYPE_NUMBER, cx_Oracle.DB_TYPE_TIMESTAMP, cx_Oracle.DB_TYPE_NUMBER)
                                 cur_pdb2.execute(None,list(row.values()))
                                 conn_pdb2.commit()
-                        except cx_Oracle.IntegrityError: 
+                        except cx_Oracle.IntegrityError:
+                                aux = row['CPU_ID']
                                 del row['CPU_ID']
-                                insert_sql = "UPDATE CPU SET DB_ID = :1, SQL_ID = :2, EXECUTIONS_DELTA = :3, DISK_READS_DELTA = :4, BUFFER_GETS_DELTA = :5, CPU_TIME_DELTA = :6, ELAPSED_TIME_DELTA = :7, IOWAIT_DELTA = :8, APWAIT_DELTA = :9, TIMESTAMP = :10"
+                                row['CPU_ID'] = aux
+
+                                insert_sql = "UPDATE CPU SET DB_ID = :1, SQL_ID = :2, EXECUTIONS_DELTA = :3, DISK_READS_DELTA = :4, BUFFER_GETS_DELTA = :5, \
+                                        CPU_TIME_DELTA = :6, ELAPSED_TIME_DELTA = :7, IOWAIT_DELTA = :8, APWAIT_DELTA = :9, TIMESTAMP = :10 \
+                                                WHERE CPU_ID = :11"
                                 cur_pdb2.prepare(insert_sql)
-                                cur_pdb2.setinputsizes(cx_Oracle.DB_TYPE_NUMBER, cx_Oracle.DB_TYPE_VARCHAR, cx_Oracle.DB_TYPE_NUMBER, cx_Oracle.DB_TYPE_NUMBER, cx_Oracle.DB_TYPE_NUMBER, cx_Oracle.DB_TYPE_NUMBER, cx_Oracle.DB_TYPE_NUMBER, cx_Oracle.DB_TYPE_NUMBER, cx_Oracle.DB_TYPE_NUMBER, cx_Oracle.DB_TYPE_TIMESTAMP)
+                                cur_pdb2.setinputsizes(cx_Oracle.DB_TYPE_NUMBER, cx_Oracle.DB_TYPE_VARCHAR, cx_Oracle.DB_TYPE_NUMBER, cx_Oracle.DB_TYPE_NUMBER, cx_Oracle.DB_TYPE_NUMBER, cx_Oracle.DB_TYPE_NUMBER, cx_Oracle.DB_TYPE_NUMBER, cx_Oracle.DB_TYPE_NUMBER, cx_Oracle.DB_TYPE_NUMBER, cx_Oracle.DB_TYPE_TIMESTAMP, cx_Oracle.DB_TYPE_NUMBER)
                                 cur_pdb2.execute(None,list(row.values()))
                                 conn_pdb2.commit()
                 else:
@@ -646,11 +727,7 @@ def main():
                 if list(row.keys())[0] == 'CPU_ID':
                         print(row)
                         print("\n")
-        
-        
-        '''
 
-        '''
         #EXECUTE QUERY -------- TABLESPACE
         print("\nInfo da tablespace no orclpdb1\n")
         res = cur_pdb1.execute(sql5_2)
@@ -678,10 +755,13 @@ def main():
                                 cur_pdb2.execute(None,list(row.values()))
                                 conn_pdb2.commit()
                         except cx_Oracle.IntegrityError: 
+                                aux = row['TABLESPACE_ID']
                                 del row['TABLESPACE_ID']
-                                insert_sql = "UPDATE TABLESPACES SET TABLESPACE_NAME = :1, STATUS = :2, TYPE = :3, SEGMENT_SPACE_MANAGEMENT = :4, TIMESTAMP = :5"
+                                row['TABLESPACE_ID'] = aux
+                                insert_sql = "UPDATE TABLESPACES SET TABLESPACE_NAME = :1, STATUS = :2, TYPE = :3, SEGMENT_SPACE_MANAGEMENT = :4, TIMESTAMP = :5 \
+                                        WHERE TABLESPACE_ID = :6"
                                 cur_pdb2.prepare(insert_sql)
-                                cur_pdb2.setinputsizes(cx_Oracle.DB_TYPE_VARCHAR, cx_Oracle.DB_TYPE_VARCHAR, cx_Oracle.DB_TYPE_VARCHAR, cx_Oracle.DB_TYPE_VARCHAR, cx_Oracle.DB_TYPE_TIMESTAMP)
+                                cur_pdb2.setinputsizes(cx_Oracle.DB_TYPE_VARCHAR, cx_Oracle.DB_TYPE_VARCHAR, cx_Oracle.DB_TYPE_VARCHAR, cx_Oracle.DB_TYPE_VARCHAR, cx_Oracle.DB_TYPE_TIMESTAMP, cx_Oracle.DB_TYPE_NUMBER)
                                 cur_pdb2.execute(None,list(row.values()))
                                 conn_pdb2.commit()
                 else:
@@ -697,9 +777,6 @@ def main():
                         print(row)
                         print("\n")
 
-        '''
-
-        '''
 
         #EXECUTE QUERY -------- DATAFILES
         print("\nInfo da datafiles no orclpdb1\n")
@@ -714,7 +791,6 @@ def main():
                                 ct = datetime.datetime.now()
                                 row['TIMESTAMP'] = ct 
                                 t = list(row.values())[2]
-                                print(t)
 
                                 q = "SELECT t.TABLESPACE_ID FROM TABLESPACES t WHERE t.TABLESPACE_NAME  = :1 and rownum = 1"
 
@@ -730,18 +806,22 @@ def main():
                                 del row ['TABLESPACE_NAME']     
                                 row['TABLESPACE_ID'] = list(q_res.values())[0]     
 
-                                print(row)
-                                insert_sql = "INSERT INTO DATAFILES (DATAFILE_NAME, DATaFILE_ID, TOTAL_SPACE, AUTOEXTENSIBLE, FREE_SPACE, STATUS, TIMESTAMP, TABLESPACE_ID) \
+                                
+                                insert_sql = "INSERT INTO DATAFILES (DATAFILE_NAME, DATAFILE_ID, TOTAL_SPACE, AUTOEXTENSIBLE, FREE_SPACE, STATUS, TIMESTAMP, TABLESPACE_ID) \
                                         values (:1, :2, :3, :4, :5, :6, :7, :8) "
                                 cur_pdb2.prepare(insert_sql)
                                 cur_pdb2.setinputsizes(cx_Oracle.DB_TYPE_VARCHAR, cx_Oracle.DB_TYPE_NUMBER, cx_Oracle.DB_TYPE_NUMBER, cx_Oracle.DB_TYPE_VARCHAR, cx_Oracle.DB_TYPE_NUMBER, cx_Oracle.DB_TYPE_VARCHAR, cx_Oracle.DB_TYPE_TIMESTAMP, cx_Oracle.DB_TYPE_NUMBER)
                                 cur_pdb2.execute(None,list(row.values()))
                                 conn_pdb2.commit()
                         except cx_Oracle.IntegrityError: 
-                                del row ['DATEFILE_ID']
-                                insert_sql = "UPDATE DATAFILES SET DATAFILE_NAME = :1, TOTAL_SPACE = :2, AUTOEXTENSIBLE = :3, FREE_SPACE = :4, STATUS = :5, TIMESTAMP = :6, TABLESPACE_ID = :7"
+                                aux = row['FILE_ID']
+                                del row['FILE_ID']
+                                row['DATAFILE_ID'] = aux
+
+                                insert_sql = "UPDATE DATAFILES SET DATAFILE_NAME = :1, TOTAL_SPACE = :2, AUTOEXTENSIBLE = :3, FREE_SPACE = :4, STATUS = :5, \
+                                        TIMESTAMP = :6, TABLESPACE_ID = :7 WHERE DATAFILE_ID = :8"
                                 cur_pdb2.prepare(insert_sql)
-                                cur_pdb2.setinputsizes(cx_Oracle.DB_TYPE_VARCHAR, cx_Oracle.DB_TYPE_NUMBER, cx_Oracle.DB_TYPE_VARCHAR, cx_Oracle.DB_TYPE_NUMBER, cx_Oracle.DB_TYPE_VARCHAR, cx_Oracle.DB_TYPE_TIMESTAMP, cx_Oracle.DB_TYPE_NUMBER)
+                                cur_pdb2.setinputsizes(cx_Oracle.DB_TYPE_VARCHAR, cx_Oracle.DB_TYPE_NUMBER, cx_Oracle.DB_TYPE_VARCHAR, cx_Oracle.DB_TYPE_NUMBER, cx_Oracle.DB_TYPE_VARCHAR, cx_Oracle.DB_TYPE_TIMESTAMP, cx_Oracle.DB_TYPE_NUMBER, cx_Oracle.DB_TYPE_NUMBER)
                                 cur_pdb2.execute(None,list(row.values()))
                                 conn_pdb2.commit()
                 else:
@@ -755,8 +835,7 @@ def main():
         for row in res:
                 if list(row.keys())[0] == 'DATAFILE_ID':
                         print(row)
-        '''
-                
+
         conn_pdb2.commit()
 
         cur_pdb2.close()
@@ -823,6 +902,7 @@ def insertProfile(p_name):
         
 
 if __name__ == '__main__':
-        #while True:
-        #        sleep(60 - time() % 60)
-        main()
+        while True:
+                sleep(60 - time() % 60)
+                main()
+        
