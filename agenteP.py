@@ -5,10 +5,6 @@ from time import time, sleep
 import datetime
 import types
 import re
-# Falta:
-#       Testar se os inserts funcionam, se sim falta completar o resto deles mas é simples
-#       Fazer logging das operações
-#       Se possível tentar optimizar o processo de insert
                     
 def main():
         username = "system"
